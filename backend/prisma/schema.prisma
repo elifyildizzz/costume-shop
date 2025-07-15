@@ -1,0 +1,100 @@
+// backend/prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  phone     String?
+  address   String?
+  role      Role     @default(CUSTOMER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders Order[]
+
+  @@map("users")
+}
+
+model Costume {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  category    String
+  size        String[]
+  color       String
+  material    String
+  images      String[]
+  salePrice   Float?
+  rentalPrice Float?
+  isForSale   Boolean  @default(false)
+  isForRent   Boolean  @default(false)
+  stock       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  orderItems OrderItem[]
+
+  @@map("costumes")
+}
+
+model Order {
+  id               String      @id @default(cuid())
+  userId           String
+  type             OrderType
+  status           OrderStatus @default(PENDING)
+  totalAmount      Float
+  rentalStartDate  DateTime?
+  rentalEndDate    DateTime?
+  shippingAddress  String
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  user  User        @relation(fields: [userId], references: [id])
+  items OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String    @id @default(cuid())
+  orderId   String
+  costumeId String
+  quantity  Int
+  size      String
+  price     Float
+  type      OrderType
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  costume Costume @relation(fields: [costumeId], references: [id])
+
+  @@map("order_items")
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+enum OrderType {
+  SALE
+  RENTAL
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  RETURNED
+  CANCELLED
+}
