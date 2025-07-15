@@ -1,0 +1,336 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Genel Ayarlar */
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #ffffff; /* Arka plan beyaz */
+  color: #000000; /* Yazılar siyah */
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+/* ---- HEADER OVERRIDES ---- */
+header {
+  all: unset !important;
+  display: block !important;
+  background: white !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  border-bottom: 1px solid #e5e7eb !important;
+}
+
+header div {
+  all: unset !important;
+  display: block !important;
+}
+
+header .grid {
+  display: grid !important;
+}
+
+header .grid-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+header .items-center {
+  align-items: center !important;
+}
+
+header .justify-center {
+  justify-content: center !important;
+}
+
+header .justify-end {
+  justify-content: flex-end !important;
+}
+
+header .flex {
+  display: flex !important;
+}
+
+header .flex-col {
+  flex-direction: column !important;
+}
+
+header .logo-container {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  text-align: center !important;
+}
+
+header .user-menu {
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  gap: 1rem !important;
+}
+
+header nav {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 2rem !important;
+  flex-wrap: wrap !important;
+  padding: 1rem 0 !important;
+}
+
+header nav a {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #000000 !important; /* Yazılar siyah */
+  text-decoration: none !important;
+  letter-spacing: 0.5px !important;
+  white-space: nowrap !important;
+  transition: color 0.3s ease !important;
+  padding: 0.5rem 0.25rem !important;
+  border-bottom: 2px solid transparent !important;
+}
+
+header nav a:hover {
+  color: #ea580c !important;
+  border-bottom-color: #ea580c !important;
+}
+
+header .search-container {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  margin-left: 1.5rem !important;
+}
+
+header .search-container input {
+  border: 1px solid #d1d5db !important;
+  border-radius: 9999px !important;
+  background: #f9fafb !important;
+  font-size: 14px !important;
+  padding: 0.5rem 1rem !important;
+  padding-right: 2.5rem !important;
+  width: 8rem !important;
+  outline: none !important;
+  transition: all 0.2s ease !important;
+}
+
+header .search-container input:focus {
+  ring: 2px solid #ea580c !important;
+  border-color: transparent !important;
+}
+
+header .search-container button {
+  position: absolute !important;
+  right: 0.75rem !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  background: none !important;
+  border: none !important;
+  cursor: pointer !important;
+  color: #6b7280 !important;
+}
+
+header .search-container button:hover {
+  color: #ea580c !important;
+}
+
+/* Responsive düzenleme */
+@media (max-width: 768px) {
+  header .grid-cols-3 {
+    grid-template-columns: 1fr !important;
+  }
+  header .user-menu {
+    justify-content: center !important;
+    margin-top: 1rem !important;
+  }
+  header nav {
+    gap: 1rem !important;
+  }
+  header .search-container {
+    margin-left: 0 !important;
+    margin-top: 0.5rem !important;
+  }
+}
+
+@media (min-width: 769px) {
+  header .col-span-3 {
+    grid-column: span 1 / span 1 !important;
+  }
+}
+
+/* ---- FOOTER OVERRIDES ---- */
+footer,
+footer *,
+footer h1,
+footer h2,
+footer h3,
+footer h4,
+footer h5,
+footer h6,
+footer p,
+footer a,
+footer span,
+footer div {
+font-family: "Playfair Display", "Georgia", serif !important;
+}
+footer {
+background-color: #ffffff !important;
+color: #000000 !important;
+padding: 2rem 0 !important;
+}
+footer .w-full {
+width: 100% !important;
+}
+footer .flex {
+display: flex !important;
+}
+footer .flex-col {
+flex-direction: column !important;
+}
+footer .items-center {
+align-items: center !important;
+}
+footer .text-center {
+text-align: center !important;
+}
+footer .justify-center {
+justify-content: center !important;
+}
+footer .space-y-8 > :not([hidden]) ~ :not([hidden]) {
+margin-top: 1.5rem !important;
+}
+footer .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+margin-top: 1rem !important;
+}
+footer .space-y-4 > :not([hidden]) ~ :not([hidden]) {
+margin-top: 0.75rem !important;
+}
+footer .space-y-3 > :not([hidden]) ~ :not([hidden]) {
+margin-top: 0.5rem !important;
+}
+footer .space-y-2 > :not([hidden]) ~ :not([hidden]) {
+margin-top: 0.5rem !important;
+}
+footer .space-x-6 > :not([hidden]) ~ :not([hidden]) {
+margin-left: 1.5rem !important;
+}
+footer .gap-12 {
+gap: 2rem !important;
+}
+footer .gap-20 {
+gap: 3rem !important;
+}
+/* Footer h3 için özel stiller */
+footer h3 {
+  font-size: 2rem !important; /* Daha küçük boyut */
+  font-weight: 500 !important; /* Biraz daha kalın */
+  color: #000000 !important;
+  margin-bottom: 0.5rem !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0.025em !important; /* Hafif pozitif letter spacing */
+  font-family: "Playfair Display", "Georgia", serif !important; /* Kodunuzdaki özel font */
+  text-rendering: optimizeLegibility !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* Responsive ayarlar */
+@media (max-width: 768px) {
+  footer h3 {
+    font-size: 1.75rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  footer h3 {
+    font-size: 1.5rem !important;
+  }
+}
+footer h4 {
+font-size: 1.125rem !important;
+font-weight: 700 !important;
+color: #000000 !important;
+margin-bottom: 0.75rem !important;
+}
+footer p {
+font-size: 1rem !important;
+color: #374151 !important;
+font-weight: 500 !important;
+}
+footer ul {
+list-style: none !important;
+padding: 0 !important;
+margin: 0 !important;
+}
+footer li {
+margin: 0 !important;
+}
+footer a {
+color: #374151 !important;
+transition: all 0.3s ease !important;
+text-decoration: none !important;
+font-weight: 500 !important;
+}
+footer a:hover {
+color: #ea580c !important;
+}
+footer .social-icons a,
+footer .w-12 {
+width: 3rem !important;
+height: 3rem !important;
+background: #f3f4f6 !important;
+border-radius: 50% !important;
+display: flex !important;
+align-items: center !important;
+justify-content: center !important;
+color: #6b7280 !important;
+transition: all 0.3s ease !important;
+}
+footer .social-icons a:hover,
+footer .w-12:hover {
+background: #ea580c !important;
+color: #ffffff !important;
+}
+footer .border-t {
+border-top: 1px solid #e5e7eb !important;
+}
+footer .pt-4 {
+padding-top: 1rem !important;
+}
+footer .max-w-md {
+max-width: 28rem !important;
+}
+footer .text-sm {
+font-size: 0.875rem !important;
+}
+footer .text-gray-600 {
+color: #6b7280 !important;
+}
+/* Responsive */
+@media (min-width: 640px) {
+footer .sm\\:flex-row {
+flex-direction: row !important;
+ }
+}
+@media (min-width: 768px) {
+footer .md\\:gap-20 {
+gap: 3rem !important;
+ }
+}
+/* Hakkımızda ve Yardım bölümlerinin yan yana durmasını zorla */
+footer .flex.flex-col.sm\\:flex-row {
+flex-direction: row !important;
+justify-content: center !important;
+align-items: flex-start !important;
+}
+@media (max-width: 639px) {
+footer .flex.flex-col.sm\\:flex-row {
+flex-direction: column !important;
+align-items: center !important;
+ }
+}
