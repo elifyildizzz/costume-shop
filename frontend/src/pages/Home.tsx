@@ -17,25 +17,25 @@ const Home: React.FC = () => {
       id: 1,
       name: ' Salyangoz Kostümü',
       price: '₺249',
-      image: 'kostüm1.jpg'
+      image: '../images/kostüm1.jpg'
     },
     {
       id: 2,
       name: 'Peri Kostümü',
       price: '₺199',
-      image: 'kostüm2.jpg'
+      image: '../images/kostüm2.jpg'
     },
     {
       id: 3,
       name: 'Uğur Böceği Kostümü',
       price: '₺349',
-      image: 'kostüm3.jpg',
+      image: '../images/kostüm3.jpg',
     },
     {
       id: 4,
       name: 'Cadı Kostümü',
       price: '₺299',
-      image: 'kostüm4.jpg',
+      image: '../images/kostüm4.jpg',
     }
   ];
 

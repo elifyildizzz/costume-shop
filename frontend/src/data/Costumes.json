@@ -1,0 +1,68 @@
+{
+  "costumes": [
+    {
+      "id": 1,
+      "name": "GÜNEŞ KOSTÜMÜ",
+      "price": "1.299,00 TL",
+      "image": "/images/kostüm5.jpg",
+      "colors": ["sarı"],
+      "size": ["S", "M", "L"]
+    },
+    {
+      "id": 2,
+      "name": "MANTAR KOSTÜMÜ",
+      "price": "1.199,00 TL",
+      "image": "/images/kostüm6.jpg",
+      "colors": ["kırmızı", "beyaz"],
+      "size": ["M", "L", "XL"]
+    },
+    {
+      "id": 3,
+      "name": "CADI KOSTÜMÜ",
+      "price": "1.099,00 TL",
+      "image": "/images/kostüm4.jpg",
+      "colors": ["siyah"],
+      "size": ["S", "M"]
+    },
+    {
+      "id": 4,
+      "name": "UĞUR BÖCEĞİ KOSTÜMÜ",
+      "price": "1.499,00 TL",
+      "image": "/images/kostüm3.jpg",
+      "colors": ["siyah", "kırmızı"],
+      "size": ["M", "L"]
+    },
+    {
+      "id": 5,
+      "name": "PRENSES KOSTÜMÜ",
+      "price": "899,00 TL",
+      "image": "/images/kostüm2.jpg",
+      "colors": ["yeşil","bej"],
+      "size": ["S", "M"]
+    },
+    {
+      "id": 6,
+      "name": "SALYANGOZ KOSTÜMÜ",
+      "price": "1.099,00 TL",
+      "image": "/images/kostüm1.jpg",
+      "colors": ["beyaz","turuncu"],
+      "size": ["M", "L", "XL"]
+    },
+    {
+      "id": 7,
+      "name": "BÖCEK KOSTÜMÜ",
+      "price": "1.399,00 TL",
+      "image": "/images/yeni2.jpg",
+      "colors": ["kahverengi", "siyah"],
+      "size": ["S", "M", "L"]
+    },
+    {
+      "id": 8,
+      "name": "CADI KOSTÜMÜ",
+      "price": "1.199,00 TL",
+      "image": "/images/yeni1.jpg",
+      "colors": ["siyah", "mavi"],
+      "size": ["M", "L"]
+    }
+  ]
+} 

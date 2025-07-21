@@ -106,7 +106,7 @@ const Header: React.FC = () => {
             </div>
 
             {/* Kullanıcı Menüsü */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
               {user ? (
                 <>
                   <span className="hidden lg:inline" style={{ fontSize: '0.875rem', color: '#6b7280' }}>
@@ -161,7 +161,8 @@ const Header: React.FC = () => {
                       color: '#6b7280', 
                       textDecoration: 'none',
                       fontWeight: '500',
-                      transition: 'color 0.2s ease'
+                      transition: 'color 0.2s ease',
+                      marginRight: '16px'
                     }}
                     onMouseOver={(e) => {
                       (e.target as HTMLAnchorElement).style.color = '#ea580c';
@@ -172,68 +173,71 @@ const Header: React.FC = () => {
                   >
                     Üye Ol
                   </Link>
+                  
+                  {/* Favoriler */}
+                  <Link 
+                    to="/wishlist" 
+                    style={{ 
+                      fontSize: '1.25rem', 
+                      color: '#6b7280', 
+                      textDecoration: 'none',
+                      transition: 'color 0.2s ease',
+                      marginRight: '18px'
+                    }}
+                    title="Favoriler"
+                    onMouseOver={(e) => {
+                      (e.target as HTMLAnchorElement).style.color = '#ef4444';
+                    }}
+                    onMouseOut={(e) => {
+                      (e.target as HTMLAnchorElement).style.color = '#6b7280';
+                    }}
+                  >
+                    ♡
+                  </Link>
+                  
+                  {/* Sepet */}
+                  <Link 
+                    to="/cart" 
+                    style={{ 
+                      fontSize: '1.25rem', 
+                      color: '#6b7280', 
+                      textDecoration: 'none',
+                      position: 'relative',
+                      transition: 'color 0.2s ease',
+                      marginRight: '0px',
+                      marginLeft: '2px'
+                    }}
+                    title="Sepet"
+                    onMouseOver={(e) => {
+                      (e.target as HTMLAnchorElement).style.color = '#ea580c';
+                    }}
+                    onMouseOut={(e) => {
+                      (e.target as HTMLAnchorElement).style.color = '#6b7280';
+                    }}
+                  >
+                    🛒
+                    {getTotalItems() > 0 && (
+                      <span style={{
+                        position: 'absolute',
+                        top: '-8px',
+                        right: '-8px',
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        fontSize: '0.75rem',
+                        borderRadius: '50%',
+                        height: '20px',
+                        width: '20px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: '500'
+                      }}>
+                        {getTotalItems()}
+                      </span>
+                    )}
+                  </Link>
                 </>
               )}
-              
-              {/* Favoriler */}
-              <Link 
-                to="/wishlist" 
-                style={{ 
-                  fontSize: '1.25rem', 
-                  color: '#6b7280', 
-                  textDecoration: 'none',
-                  transition: 'color 0.2s ease'
-                }}
-                title="Favoriler"
-                onMouseOver={(e) => {
-                  (e.target as HTMLAnchorElement).style.color = '#ef4444';
-                }}
-                onMouseOut={(e) => {
-                  (e.target as HTMLAnchorElement).style.color = '#6b7280';
-                }}
-              >
-                ♡
-              </Link>
-              
-              {/* Sepet */}
-              <Link 
-                to="/cart" 
-                style={{ 
-                  fontSize: '1.25rem', 
-                  color: '#6b7280', 
-                  textDecoration: 'none',
-                  position: 'relative',
-                  transition: 'color 0.2s ease'
-                }}
-                title="Sepet"
-                onMouseOver={(e) => {
-                  (e.target as HTMLAnchorElement).style.color = '#ea580c';
-                }}
-                onMouseOut={(e) => {
-                  (e.target as HTMLAnchorElement).style.color = '#6b7280';
-                }}
-              >
-                🛒
-                {getTotalItems() > 0 && (
-                  <span style={{
-                    position: 'absolute',
-                    top: '-8px',
-                    right: '-8px',
-                    backgroundColor: '#ef4444',
-                    color: 'white',
-                    fontSize: '0.75rem',
-                    borderRadius: '50%',
-                    height: '20px',
-                    width: '20px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontWeight: '500'
-                  }}>
-                    {getTotalItems()}
-                  </span>
-                )}
-              </Link>
             </div>
           </div>
         </div>

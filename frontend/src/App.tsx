@@ -6,11 +6,13 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './pages/Home';
 import Costumes from './pages/Costumes';
+import NewCostumes from './pages/NewCostumes'; 
 import { CostumeDetail } from './pages/CostumeDetail';
 import { Cart } from './pages/Cart';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
-import NewCostumes from './pages/NewCostumes';
+import Accessories from './pages/Accessories';
+import Contact from './pages/Contact';
 
 // Geçici placeholder componentler
 const Checkout = () => <div>Checkout sayfası - yakında gelecek</div>;
@@ -29,6 +31,9 @@ function App() {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/costumes" element={<Costumes />} />
+                <Route path="/new-costumes" element={<NewCostumes />} /> {/* Yeni eklenen route */}
+                <Route path="/aksesuarlar" element={<Accessories />} />
+                <Route path="/contact" element={<Contact />} />
                 <Route path="/costumes/:id" element={<CostumeDetail />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/checkout" element={<Checkout />} />
@@ -36,8 +41,6 @@ function App() {
                 <Route path="/register" element={<Register />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/orders" element={<Orders />} />
-                <Route path="/new-costumes" element={<NewCostumes />} />
-                {/* 404 route'u HER ZAMAN en son olmalı */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>

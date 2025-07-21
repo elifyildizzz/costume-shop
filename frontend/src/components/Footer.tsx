@@ -80,7 +80,7 @@ const Footer: React.FC = () => {
               href={href}
               className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-orange-500 hover:text-white transition-all duration-300 shadow-sm hover:shadow-md"
             >
-              <Icon size={22} />
+              {Icon({ size: 22 })}
             </a>
           ))}
         </div>
