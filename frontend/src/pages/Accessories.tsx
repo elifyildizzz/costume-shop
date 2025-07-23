@@ -1,5 +1,8 @@
 import aksesuarData from '../data/Accessories.json';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../utils/AuthContext';
+import FavoriteService from '../services/FavoriteService';
 
 const sortOptions = [
   { value: 'recommended', label: 'Önerilen' },
@@ -23,6 +26,32 @@ export default function Aksesuarlar() {
   const [maxPrice, setMaxPrice] = useState(5000);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [favorites, setFavorites] = useState<any[]>([]);
+  const [loadingFavorites, setLoadingFavorites] = useState(false);
+
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      if (!user) {
+        setFavorites([]);
+        return;
+      }
+      setLoadingFavorites(true);
+      try {
+        const token = localStorage.getItem('authToken');
+        if (token) {
+          const favs = await FavoriteService.getFavorites(token);
+          setFavorites(favs);
+        }
+      } catch (e) {
+        setFavorites([]);
+      } finally {
+        setLoadingFavorites(false);
+      }
+    };
+    fetchFavorites();
+  }, [user]);
 
   // Sıralama
   let sortedAksesuarlar = [...aksesuarData.aksesuarlar];
@@ -36,12 +65,50 @@ export default function Aksesuarlar() {
 
   // Filtrelenmiş ürünler
   const filteredAksesuarlar = sortedAksesuarlar.filter(c => {
-    const priceNum = Number(c.price.replace(/[^\d,]/g, '').replace(',', '.'));
+    const priceNum = Number(c.price.replace(/[^,\d]/g, '').replace(',', '.'));
     const priceMatch = priceNum >= minPrice && priceNum <= maxPrice;
     const colorMatch = selectedColors.length === 0 || c.colors.some(color => selectedColors.includes(color));
     const sizeMatch = selectedSizes.length === 0 || (c.size && c.size.some(size => selectedSizes.includes(size)));
     return priceMatch && colorMatch && sizeMatch;
   });
+
+  // Favori kontrol fonksiyonu
+  const isItemFavorite = (item: any) => {
+    if (!user) return false;
+    return favorites.some(fav => fav.accessoryId === item.id);
+  };
+
+  // Favori toggle fonksiyonu
+  const handleFavoriteToggle = async (item: any) => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+    try {
+      if (isItemFavorite(item)) {
+        // Sil
+        await FavoriteService.removeFavorite({
+          token,
+          accessoryId: item.id
+        });
+        setFavorites(favorites.filter(fav => fav.accessoryId !== item.id));
+      } else {
+        // Ekle
+        const newFav = await FavoriteService.addFavorite({
+          token,
+          accessoryId: item.id
+        });
+        setFavorites([...favorites, newFav]);
+      }
+    } catch (e) {
+      // Hata yönetimi
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -168,8 +235,8 @@ export default function Aksesuarlar() {
                 )}
               </div>
             </div>
-            <span style={{position: 'absolute', right: 12, bottom: 12}}>
-              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} className="text-gray-400 hover:text-red-500 cursor-pointer">
+            <span style={{position: 'absolute', right: 12, bottom: 12}} onClick={() => handleFavoriteToggle(aksesuar)}>
+              <svg width="20" height="20" fill={isItemFavorite(aksesuar) ? '#ef4444' : 'none'} stroke={isItemFavorite(aksesuar) ? '#ef4444' : 'currentColor'} viewBox="0 0 24 24" strokeWidth={2} className="hover:text-red-500 cursor-pointer">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
             </span>

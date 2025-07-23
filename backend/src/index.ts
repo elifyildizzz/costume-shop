@@ -7,6 +7,8 @@ import { PrismaClient } from '@prisma/client';
 import authRoutes from './routes/auth';
 import costumeRoutes from './routes/costumes';
 import orderRoutes from './routes/orders';
+import favoriteRoutes from './routes/favorites';
+
 
 dotenv.config();
 
@@ -22,6 +24,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/costumes', costumeRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/favorites', favoriteRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

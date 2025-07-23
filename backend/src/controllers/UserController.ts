@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { UserService } from '../services/UserService';
 
 export class UserController {
@@ -14,7 +14,8 @@ export class UserController {
       const user = await this.userService.createUser(userData);
       res.status(201).json({ success: true, user });
     } catch (error) {
-      res.status(400).json({ success: false, message: error.message });
+      const errMsg = error instanceof Error ? error.message : String(error);
+      res.status(400).json({ success: false, message: errMsg });
     }
   };
 
@@ -24,17 +25,33 @@ export class UserController {
       const result = await this.userService.loginUser(email, password);
       res.json({ success: true, ...result });
     } catch (error) {
-      res.status(401).json({ success: false, message: error.message });
+      const errMsg = error instanceof Error ? error.message : String(error);
+      res.status(401).json({ success: false, message: errMsg });
     }
   };
 
   public getProfile = async (req: Request, res: Response) => {
     try {
-      const userId = req.user?.id;
+      // userId JWT middleware tarafından ekleniyor
+      // @ts-ignore
+      const userId = req.userId;
+      if (!userId) {
+        return res.status(401).json({ success: false, message: 'Kullanıcı kimliği bulunamadı.' });
+      }
       const user = await this.userService.getUserById(userId);
       res.json({ success: true, user });
     } catch (error) {
-      res.status(404).json({ success: false, message: error.message });
+      const errMsg = error instanceof Error ? error.message : String(error);
+      res.status(404).json({ success: false, message: errMsg });
     }
   };
 }
+
+export function errorHandler(err: any, req: Request, res: Response, next: NextFunction) {
+  console.error(err.stack || err);
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || 'Sunucu hatası oluştu.'
+  });
+}
+

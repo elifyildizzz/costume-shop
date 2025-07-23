@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
+import { useLocation } from 'react-router-dom';
+
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -14,7 +19,6 @@ const Login: React.FC = () => {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
       await login(email, password);
       navigate('/');
@@ -26,56 +30,35 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="container">
-      <div className="row">
-        <div className="col-6" style={{ margin: '0 auto' }}>
-          <div className="card">
-            <div className="card-header">
-              <h2 className="card-title">Giriş Yap</h2>
-            </div>
-            
-            {error && (
-              <div className="alert alert-danger">{error}</div>
-            )}
-            
-            <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label className="form-label">Email</label>
-                <input
-                  type="email"
-                  className="form-control"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              
-              <div className="form-group">
-                <label className="form-label">Şifre</label>
-                <input
-                  type="password"
-                  className="form-control"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-              
-              <button 
-                type="submit" 
-                className="btn btn-primary"
-                disabled={loading}
-                style={{ width: '100%' }}
-              >
-                {loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
-              </button>
-            </form>
-            
-            <p style={{ textAlign: 'center', marginTop: '1rem' }}>
-              Hesabınız yok mu? <Link to="/register">Kayıt olun</Link>
-            </p>
-          </div>
-        </div>
+    <div style={{ height: '100vh', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', background: '#fff', paddingTop: '48px' }}>
+      <div className="contact-form-box">
+        <h2 style={{ textAlign: 'center', fontWeight: 700, fontSize: '1.6rem', marginBottom: '1.5rem', color: '#1a202c' }}>Giriş Yap</h2>
+        {error && <div style={{ color: 'red', marginBottom: 12, textAlign: 'center' }}>{error}</div>}
+        <form onSubmit={handleSubmit}>
+          <label>Email</label>
+          <input
+            type="email"
+            name="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+          />
+          <label>Şifre</label>
+          <input
+            type="password"
+            name="password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+          />
+          <button type="submit" disabled={loading}>
+            {loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
+          </button>
+        </form>
+        <p style={{ textAlign: 'center', marginTop: '1rem', color: '#444' }}>
+          Hesabınız yok mu?{' '}
+          <Link to="/register" style={{ color: '#668A69', fontWeight: 600 }}>Kayıt olun</Link>
+        </p>
       </div>
     </div>
   );

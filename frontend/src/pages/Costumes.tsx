@@ -1,5 +1,13 @@
 import costumesData from '../data/Costumes.json';
-import React, { useState } from 'react';
+import accessoriesData from '../data/Accessories.json';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../utils/AuthContext';
+import FavoriteService from '../services/FavoriteService';
+
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
 
 const sortOptions = [
   { value: 'recommended', label: 'Önerilen' },
@@ -16,6 +24,13 @@ function parsePrice(priceStr: string) {
 }
 
 export default function Costumes() {
+  const query = useQuery();
+  const searchTerm = query.get('search') || '';
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [favorites, setFavorites] = useState<any[]>([]);
+  const [loadingFavorites, setLoadingFavorites] = useState(false);
+
   const [showFilter, setShowFilter] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
   const [selectedSort, setSelectedSort] = useState('recommended');
@@ -24,6 +39,29 @@ export default function Costumes() {
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [openSizeIndex, setOpenSizeIndex] = useState<number | null>(null);
+
+  // Favorileri çek
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      if (!user) {
+        setFavorites([]);
+        return;
+      }
+      setLoadingFavorites(true);
+      try {
+        const token = localStorage.getItem('authToken');
+        if (token) {
+          const favs = await FavoriteService.getFavorites(token);
+          setFavorites(favs);
+        }
+      } catch (e) {
+        setFavorites([]);
+      } finally {
+        setLoadingFavorites(false);
+      }
+    };
+    fetchFavorites();
+  }, [user]);
 
   // Sıralama
   let sortedCostumes = [...costumesData.costumes];
@@ -35,14 +73,75 @@ export default function Costumes() {
     sortedCostumes.sort((a, b) => b.id - a.id);
   }
 
-  // Filtrelenmiş ürünler
-  const filteredCostumes = sortedCostumes.filter(c => {
-    const priceNum = Number(c.price.replace(/[^\d,]/g, '').replace(',', '.'));
+  // Aksesuarlar da dahil, arama varsa birlikte filtrele
+  let filteredCostumes = sortedCostumes.filter(c => {
+    const priceNum = Number(c.price.replace(/[^,\d]/g, '').replace(',', '.'));
     const priceMatch = priceNum >= minPrice && priceNum <= maxPrice;
     const colorMatch = selectedColors.length === 0 || c.colors.some((color: string) => selectedColors.includes(color));
     const sizeMatch = selectedSizes.length === 0 || (c.size && c.size.some((size: string) => selectedSizes.includes(size)));
-    return priceMatch && colorMatch && sizeMatch;
+    // Arama kelimesi varsa, isimde arama yap (Türkçe karakter duyarlı, büyük/küçük harf duyarsız)
+    const searchMatch = !searchTerm || c.name.toLocaleLowerCase('tr').includes(searchTerm.toLocaleLowerCase('tr'));
+    return priceMatch && colorMatch && sizeMatch && searchMatch;
   });
+
+  let filteredAccessories: any[] = [];
+  if (searchTerm) {
+    filteredAccessories = accessoriesData.aksesuarlar.filter(a =>
+      a.name.toLocaleLowerCase('tr').includes(searchTerm.toLocaleLowerCase('tr'))
+    );
+  }
+
+  // Sonuçları birleştir
+  const allResults = searchTerm ? [...filteredCostumes, ...filteredAccessories] : filteredCostumes;
+
+  // Favori kontrol fonksiyonu
+  const isItemFavorite = (item: any) => {
+    if (!user) return false;
+    if (item.size) {
+      // Costume
+      return favorites.some(fav => fav.costumeId === item.id);
+    } else {
+      // Accessory
+      return favorites.some(fav => fav.accessoryId === item.id);
+    }
+  };
+
+  // Favori toggle fonksiyonu
+  const handleFavoriteToggle = async (item: any) => {
+    console.log('Favori tıklandı:', item);
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+    try {
+      if (isItemFavorite(item)) {
+        // Sil
+        await FavoriteService.removeFavorite({
+          token,
+          costumeId: item.size ? item.id : undefined,
+          accessoryId: !item.size ? item.id : undefined,
+        });
+        setFavorites(favorites.filter(fav =>
+          (item.size && fav.costumeId !== item.id) || (!item.size && fav.accessoryId !== item.id)
+        ));
+      } else {
+        // Ekle
+        const newFav = await FavoriteService.addFavorite({
+          token,
+          costumeId: item.size ? item.id : undefined,
+          accessoryId: !item.size ? item.id : undefined,
+        });
+        setFavorites([...favorites, newFav]);
+      }
+    } catch (e) {
+      // Hata yönetimi
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -150,31 +249,35 @@ export default function Costumes() {
       )}
       {/* Ürün Grid */}
       <div className="newcostumes-grid">
-        {filteredCostumes.map((costume: any, idx: number) => (
-          <div key={costume.id} className="newcostumes-card" style={{position: 'relative'}}>
-            <div className="newcostumes-image-container">
-              <img src={costume.image} alt={costume.name} />
-            </div>
-            <div className="newcostumes-info">
-              <div className="text-black text-base font-normal leading-tight">{costume.name}</div>
-              <div className="text-black text-lg font-bold">{costume.price}</div>
-              {/* Bedenler */}
-              <div className="beden-row">
-                <span className="text-xs text-gray-400 mr-2 cursor-pointer" onClick={() => setOpenSizeIndex(openSizeIndex === idx ? null : idx)}>Beden seç</span>
-                {openSizeIndex === idx && costume.size && costume.size.length > 0 && (
-                  costume.size.map((size: string, sidx: number) => (
-                    <span key={sidx} className="size-box">{size}</span>
-                  ))
-                )}
+        {allResults.length === 0 ? (
+          <div className="text-center py-10 text-gray-500">İlgili ürün bulunamadı.</div>
+        ) : (
+          allResults.map((item: any, idx: number) => (
+            <div key={item.id} className="newcostumes-card" style={{position: 'relative'}}>
+              <div className="newcostumes-image-container">
+                <img src={item.image} alt={item.name} />
               </div>
+              <div className="newcostumes-info">
+                <div className="text-black text-base font-normal leading-tight">{item.name}</div>
+                <div className="text-black text-lg font-bold">{item.price}</div>
+                {/* Bedenler */}
+                <div className="beden-row">
+                  <span className="text-xs text-gray-400 mr-2 cursor-pointer" onClick={() => setOpenSizeIndex(openSizeIndex === idx ? null : idx)}>Beden seç</span>
+                  {openSizeIndex === idx && item.size && item.size.length > 0 && (
+                    item.size.map((size: string, sidx: number) => (
+                      <span key={sidx} className="text-xs text-gray-700 border border-gray-300 rounded px-1 mr-1">{size}</span>
+                    ))
+                  )}
+                </div>
+              </div>
+              <span style={{position: 'absolute', right: 12, bottom: 12}} onClick={() => handleFavoriteToggle(item)}>
+                <svg width="20" height="20" fill={isItemFavorite(item) ? '#ef4444' : 'none'} stroke={isItemFavorite(item) ? '#ef4444' : 'currentColor'} viewBox="0 0 24 24" strokeWidth={2} className="hover:text-red-500 cursor-pointer">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </span>
             </div>
-            <span style={{position: 'absolute', right: 12, bottom: 12}}>
-              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} className="text-gray-400 hover:text-red-500 cursor-pointer">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-              </svg>
-            </span>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );

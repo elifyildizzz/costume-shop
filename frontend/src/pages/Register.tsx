@@ -26,14 +26,11 @@ const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
     if (formData.password !== formData.confirmPassword) {
       setError('Şifreler eşleşmiyor');
       return;
     }
-
     setLoading(true);
-
     try {
       await register({
         email: formData.email,
@@ -50,94 +47,59 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="container">
-      <div className="row">
-        <div className="col-6" style={{ margin: '0 auto' }}>
-          <div className="card">
-            <div className="card-header">
-              <h2 className="card-title">Kayıt Ol</h2>
-            </div>
-
-            {error && (
-              <div className="alert alert-danger">{error}</div>
-            )}
-
-            <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label className="form-label">Ad</label>
-                <input
-                  type="text"
-                  name="firstName"
-                  className="form-control"
-                  value={formData.firstName}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Soyad</label>
-                <input
-                  type="text"
-                  name="lastName"
-                  className="form-control"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  className="form-control"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Şifre</label>
-                <input
-                  type="password"
-                  name="password"
-                  className="form-control"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Şifre Tekrar</label>
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  className="form-control"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="btn btn-primary"
-                disabled={loading}
-                style={{ width: '100%' }}
-              >
-                {loading ? 'Kayıt olunuyor...' : 'Kayıt Ol'}
-              </button>
-            </form>
-
-            <p style={{ textAlign: 'center', marginTop: '1rem' }}>
-              Zaten hesabınız var mı? <Link to="/login">Giriş yap</Link>
-            </p>
-          </div>
-        </div>
+    <div style={{ height: '100vh', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', background: '#fff', paddingTop: '48px' }}>
+      <div className="contact-form-box">
+        <h2 style={{ textAlign: 'center', fontWeight: 700, fontSize: '1.6rem', marginBottom: '1.5rem', color: '#1a202c' }}>Kayıt Ol</h2>
+        {error && <div style={{ color: 'red', marginBottom: 12, textAlign: 'center' }}>{error}</div>}
+        <form onSubmit={handleSubmit}>
+          <label>Ad</label>
+          <input
+            type="text"
+            name="firstName"
+            value={formData.firstName}
+            onChange={handleChange}
+            required
+          />
+          <label>Soyad</label>
+          <input
+            type="text"
+            name="lastName"
+            value={formData.lastName}
+            onChange={handleChange}
+            required
+          />
+          <label>Email</label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+          <label>Şifre</label>
+          <input
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
+          <label>Şifre Tekrar</label>
+          <input
+            type="password"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            required
+          />
+          <button type="submit" disabled={loading}>
+            {loading ? 'Kayıt olunuyor...' : 'Kayıt Ol'}
+          </button>
+        </form>
+        <p style={{ textAlign: 'center', marginTop: '1rem', color: '#444' }}>
+          Zaten hesabınız var mı?{' '}
+          <Link to="/login" style={{ color: '#668A69', fontWeight: 600 }}>Giriş yap</Link>
+        </p>
       </div>
     </div>
   );

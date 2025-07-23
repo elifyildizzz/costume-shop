@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../utils/AuthContext';
 import { useCart } from '../context/CartContext';
 
 const Header: React.FC = () => {
@@ -8,9 +8,19 @@ const Header: React.FC = () => {
   const { getTotalItems } = useCart();
   const navigate = useNavigate();
 
+  const [search, setSearch] = useState('');
+
   const handleLogout = () => {
     logout();
     navigate('/');
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (search.trim()) {
+      navigate(`/costumes?search=${encodeURIComponent(search.trim())}`);
+      setSearch('');
+    }
   };
 
   return (
@@ -57,12 +67,24 @@ const Header: React.FC = () => {
           </div>
 
           {/* Sağ taraf - Arama + Kullanıcı menüsü */}
-          <div className="user-menu" style={{ flex: '1', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '1rem' }}>
+          <div
+            className="user-menu"
+            style={{
+              flex: '1',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              gap: '0.8rem',
+              minHeight: '40px'
+            }}
+          >
             {/* Arama Alanı */}
-            <div className="search-container" style={{ position: 'relative' }}>
+            <form className="search-container" style={{ position: 'relative' }} onSubmit={handleSearch}>
               <input
                 type="text"
                 placeholder="Arama..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
                 style={{ 
                   border: '1px solid #d1d5db',
                   borderRadius: '9999px',
@@ -83,6 +105,7 @@ const Header: React.FC = () => {
                 }}
               />
               <button 
+                type="submit"
                 style={{
                   position: 'absolute',
                   right: '12px',
@@ -103,14 +126,18 @@ const Header: React.FC = () => {
               >
                 🔍
               </button>
-            </div>
+            </form>
 
             {/* Kullanıcı Menüsü */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.8rem'
+            }}>
               {user ? (
                 <>
                   <span className="hidden lg:inline" style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                    Merhaba, <span style={{ fontWeight: '500', color: '#1f2937' }}>{user.name}</span>
+                    Merhaba, <span style={{ fontWeight: '500', color: '#1f2937' }}>{user.firstName} {user.lastName}</span>
                   </span>
                   <button
                     onClick={handleLogout}
@@ -153,7 +180,7 @@ const Header: React.FC = () => {
                   >
                     Üye Girişi
                   </Link>
-                  <span style={{ color: '#d1d5db', margin: '0 0.5rem' }} className="hidden sm:inline">|</span>
+                  <span style={{ color: '#d1d5db', margin: '0 0.3rem', fontSize: '1.1rem' }}>|</span>
                   <Link 
                     to="/register" 
                     style={{ 
@@ -173,69 +200,51 @@ const Header: React.FC = () => {
                   >
                     Üye Ol
                   </Link>
-                  
+                  {/* Daha kısa ve ince dikey çizgi */}
+                  <span style={{
+                    display: 'inline-block',
+                    width: '1px',
+                    height: '16px',
+                    background: '#e5e7eb',
+                    margin: '0 0.3rem',
+                    verticalAlign: 'middle'
+                  }} />
                   {/* Favoriler */}
-                  <Link 
-                    to="/wishlist" 
-                    style={{ 
-                      fontSize: '1.25rem', 
-                      color: '#6b7280', 
-                      textDecoration: 'none',
+                  <button
+                    type="button"
+                    style={{
+                      fontSize: '1.15rem',
+                      color: '#6b7280',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
                       transition: 'color 0.2s ease',
-                      marginRight: '18px'
-                    }}
-                    title="Favoriler"
-                    onMouseOver={(e) => {
-                      (e.target as HTMLAnchorElement).style.color = '#ef4444';
-                    }}
-                    onMouseOut={(e) => {
-                      (e.target as HTMLAnchorElement).style.color = '#6b7280';
-                    }}
-                  >
-                    ♡
-                  </Link>
-                  
-                  {/* Sepet */}
-                  <Link 
-                    to="/cart" 
-                    style={{ 
-                      fontSize: '1.25rem', 
-                      color: '#6b7280', 
-                      textDecoration: 'none',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      verticalAlign: 'middle',
+                      padding: 0,
+                      lineHeight: 1,
+                      height: '20px',
                       position: 'relative',
-                      transition: 'color 0.2s ease',
-                      marginRight: '0px',
-                      marginLeft: '2px'
+                      top: '2px'
                     }}
-                    title="Sepet"
-                    onMouseOver={(e) => {
-                      (e.target as HTMLAnchorElement).style.color = '#ea580c';
+                    title="Favorilerim"
+                    onClick={() => {
+                      if (user) {
+                        navigate('/wishlist');
+                      } else {
+                        navigate('/login');
+                      }
                     }}
-                    onMouseOut={(e) => {
-                      (e.target as HTMLAnchorElement).style.color = '#6b7280';
-                    }}
+                    aria-label="Favorilerim"
+                    onMouseOver={e => (e.currentTarget.style.color = '#ef4444')}
+                    onMouseOut={e => (e.currentTarget.style.color = '#6b7280')}
                   >
-                    🛒
-                    {getTotalItems() > 0 && (
-                      <span style={{
-                        position: 'absolute',
-                        top: '-8px',
-                        right: '-8px',
-                        backgroundColor: '#ef4444',
-                        color: 'white',
-                        fontSize: '0.75rem',
-                        borderRadius: '50%',
-                        height: '20px',
-                        width: '20px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontWeight: '500'
-                      }}>
-                        {getTotalItems()}
-                      </span>
-                    )}
-                  </Link>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                      strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }}>
+                      <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                  </button>
                 </>
               )}
             </div>

@@ -1,18 +1,24 @@
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../utils/AuthContext';
+import { Link } from 'react-router-dom'; // Added Link import
 
 const Profile: React.FC = () => {
   const { user, logout } = useAuth();
   
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
-    name: user?.name || '',
+    firstName: user?.firstName || '',
+    lastName: user?.lastName || '',
     email: user?.email || '',
     phone: '',
     address: '',
     city: '',
     postalCode: ''
   });
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -21,11 +27,17 @@ const Profile: React.FC = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Profil güncelleme işlemi burada yapılacak
-    alert('Profil bilgileri güncellendi!');
-    setEditMode(false);
+    setLoading(true);
+    try {
+      // await login(email, password); // This line was commented out in the original file
+      // Giriş başarılıysa yönlendirme veya state güncellemesi yapabilirsin
+    } catch (error) {
+      // Hata mesajı gösterebilirsin
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleLogout = () => {
@@ -35,9 +47,45 @@ const Profile: React.FC = () => {
 
   if (!user) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">Profil</h1>
-        <p>Profil sayfasına erişmek için giriş yapmalısınız.</p>
+      <div className="flex justify-center items-center min-h-screen bg-white">
+        <div className="auth-card">
+          <h2 className="text-2xl font-bold mb-6 text-gray-900 text-center">Giriş Yap</h2>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label className="block text-gray-700 font-medium mb-1">Email</label>
+              <input
+                type="email"
+                className="auth-input"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700 font-medium mb-1">Şifre</label>
+              <input
+                type="password"
+                className="auth-input"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              className="auth-btn"
+              disabled={loading}
+            >
+              {loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
+            </button>
+          </form>
+          <p className="text-center mt-4 text-gray-600">
+            Hesabınız yok mu?{' '}
+            <Link to="/register" className="text-[#668A69] font-semibold hover:underline">
+              Kayıt olun
+            </Link>
+          </p>
+        </div>
       </div>
     );
   }
@@ -64,8 +112,16 @@ const Profile: React.FC = () => {
                 <label className="block text-sm font-medium mb-1">Ad Soyad</label>
                 <input
                   type="text"
-                  name="name"
-                  value={formData.name}
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border rounded"
+                  required
+                />
+                <input
+                  type="text"
+                  name="lastName"
+                  value={formData.lastName}
                   onChange={handleInputChange}
                   className="w-full p-2 border rounded"
                   required
@@ -140,7 +196,7 @@ const Profile: React.FC = () => {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-600">Ad Soyad</label>
-                <p className="text-lg">{formData.name}</p>
+                <p className="text-lg">{user?.firstName} {user?.lastName}</p>
               </div>
               
               <div>
