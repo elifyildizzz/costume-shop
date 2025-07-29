@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { API_URL } from '../config'; // config.ts'ten al
 
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API_BASE = `${API_URL}/api`;
 
 export interface Favorite {
   id: number;

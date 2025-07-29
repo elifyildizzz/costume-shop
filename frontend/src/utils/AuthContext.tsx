@@ -81,8 +81,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const result = await apiService.register(userData);
       if (result.success) {
-        setUser(result.data.user);
-        localStorage.setItem('authToken', result.data.token);
       } else {
         throw new Error(result.message || 'Kayıt olurken bir hata oluştu');
       }

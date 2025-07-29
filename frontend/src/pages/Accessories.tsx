@@ -91,19 +91,11 @@ export default function Aksesuarlar() {
     }
     try {
       if (isItemFavorite(item)) {
-        // Sil
-        await FavoriteService.removeFavorite({
-          token,
-          accessoryId: item.id
-        });
+        await FavoriteService.removeFavorite({ token, accessoryId: item.id });
         setFavorites(favorites.filter(fav => fav.accessoryId !== item.id));
       } else {
-        // Ekle
-        const newFav = await FavoriteService.addFavorite({
-          token,
-          accessoryId: item.id
-        });
-        setFavorites([...favorites, newFav]);
+        const newFav = await FavoriteService.addFavorite({ token, accessoryId: item.id });
+        setFavorites([...favorites, { accessoryId: item.id, ...newFav }]);
       }
     } catch (e) {
       // Hata yönetimi

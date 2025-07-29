@@ -1,15 +1,6 @@
+import costumesData from '../data/Costumes.json';
 import newCostumesData from '../data/NewCostumes.json';
-
-export interface Costume {
-  id: number;
-  name: string;
-  price: string;
-  image: string;
-  category: string;
-  isNew: boolean;
-  isFavorite: boolean;
-  colors: string[];
-}
+import { Costume } from '../types/index';
 
 export interface CostumeFilter {
   category?: string;
@@ -26,45 +17,56 @@ export interface SortOptions {
 }
 
 export class CostumeService {
-  private costumes: Costume[] = [];
+  private allCostumes: Costume[] = [];
+  private newCostumeIds: number[] = [];
+  private newCostumes: Costume[] = [];
 
   constructor() {
-    this.costumes = newCostumesData.newCostumes;
+    this.allCostumes = costumesData.costumes.map((c: any) => ({
+      id: Number(c.id),
+      name: c.name,
+      price: String(c.price),
+      image: c.image,
+      description: c.description || "",
+      category: c.category || "",
+      images: c.images || [c.image],
+      available: c.available !== undefined ? c.available : true,
+      colors: c.colors || [],
+      size: c.size || [],
+    }));
+    this.newCostumeIds = newCostumesData.newCostumeIds.map(Number);
+    this.newCostumes = this.allCostumes.filter(c => this.newCostumeIds.includes(c.id));
   }
 
   // Tüm kostümleri getir
   getAllCostumes(): Costume[] {
-    return this.costumes;
+    return this.allCostumes;
   }
 
-  // Yeni kostümleri getir
+  // Sadece yeni kostümleri getir
   getNewCostumes(): Costume[] {
-    return this.costumes.filter(costume => costume.isNew);
+    return this.newCostumes;
   }
 
   // ID'ye göre kostüm getir
   getCostumeById(id: number): Costume | undefined {
-    return this.costumes.find(costume => costume.id === id);
+    return this.allCostumes.find(costume => costume.id === id);
   }
 
   // Kategoriye göre kostüm getir
   getCostumesByCategory(category: string): Costume[] {
-    return this.costumes.filter(costume => costume.category === category);
+    return this.allCostumes.filter(costume => costume.category === category);
   }
 
   // Kostümleri filtrele
   filterCostumes(filters: CostumeFilter): Costume[] {
-    return this.costumes.filter(costume => {
+    return this.allCostumes.filter(costume => {
       // Kategori filtresi
       if (filters.category && costume.category !== filters.category) {
         return false;
       }
 
-      // Yeni ürün filtresi
-      if (filters.isNew !== undefined && costume.isNew !== filters.isNew) {
-        return false;
-      }
-
+  
       // Fiyat aralığı filtresi
       if (filters.priceRange) {
         const price = this.parsePrice(costume.price);
@@ -122,7 +124,7 @@ export class CostumeService {
   // Fiyat arama ve filtreleme
   searchCostumes(query: string): Costume[] {
     const lowerQuery = query.toLowerCase();
-    return this.costumes.filter(costume => 
+    return this.allCostumes.filter(costume => 
       costume.name.toLowerCase().includes(lowerQuery) ||
       costume.category.toLowerCase().includes(lowerQuery)
     );
@@ -130,14 +132,14 @@ export class CostumeService {
 
   // Mevcut kategorileri getir
   getCategories(): string[] {
-    const categories = Array.from(new Set(this.costumes.map(costume => costume.category)));
+    const categories = Array.from(new Set(this.allCostumes.map(costume => costume.category)));
     return categories;
   }
 
   // Mevcut renkleri getir
   getAvailableColors(): string[] {
     const colors = new Set<string>();
-    this.costumes.forEach(costume => {
+    this.allCostumes.forEach(costume => {
       costume.colors.forEach(color => colors.add(color));
     });
     return Array.from(colors);
@@ -145,7 +147,7 @@ export class CostumeService {
 
   // Fiyat aralığını getir
   getPriceRange(): { min: number; max: number } {
-    const prices = this.costumes.map(costume => this.parsePrice(costume.price));
+    const prices = this.allCostumes.map(costume => this.parsePrice(costume.price));
     return {
       min: Math.min(...prices),
       max: Math.max(...prices)

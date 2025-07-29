@@ -1,4 +1,4 @@
-import { PrismaClient, Order, OrderItem, OrderStatus, OrderType } from '@prisma/client';
+import { PrismaClient, OrderStatus, OrderType } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -12,7 +12,7 @@ export interface OrderItemInput {
 
 export interface CreateOrderInput {
   userId: string;
-  type: OrderType; // EKLENDİ
+  type: OrderType;
   totalAmount: number;
   shippingAddress: string;
   items: OrderItemInput[];
@@ -24,7 +24,7 @@ export class OrderService {
       return await prisma.order.create({
         data: {
           userId: data.userId,
-          type: data.type, // EKLENDİ
+          type: data.type,
           totalAmount: data.totalAmount,
           status: OrderStatus.PENDING,
           shippingAddress: data.shippingAddress,

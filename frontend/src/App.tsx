@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './utils/AuthContext';
 import Header from './components/Header';
@@ -14,6 +14,7 @@ import { Register } from './pages/Register';
 import Accessories from './pages/Accessories';
 import Contact from './pages/Contact';
 import Wishlist from './pages/Wishlist';
+import Welcome from './pages/Welcome';
 
 // Geçici placeholder componentler
 const Checkout = () => <div>Checkout sayfası - yakında gelecek</div>;
@@ -21,11 +22,21 @@ const Profile = () => <div>Profile sayfası - yakında gelecek</div>;
 const Orders = () => <div>Orders sayfası - yakında gelecek</div>;
 const NotFound = () => <div>404 - Sayfa bulunamadı</div>;
 
+// ScrollToTop component
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
 function App() {
   return (
     <AuthProvider>
       <CartProvider>
         <Router>
+          <ScrollToTop />
           <div className="App flex flex-col min-h-screen">
             <Header />
             <main className="flex-grow">
@@ -43,6 +54,7 @@ function App() {
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/orders" element={<Orders />} />
                 <Route path="/wishlist" element={<Wishlist />} />
+                <Route path="/welcome" element={<Welcome />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>

@@ -1,23 +1,45 @@
 export interface User {
-  id: string;
+  id: number; // Backend'de number olarak geliyor
   email: string;
   firstName: string;
   lastName: string;
   phone?: string;
   address?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface RegisterData {
+  email: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+  phone?: string;
+  address?: string;
+}
+
+export interface LoginResponse {
+  user: User;
+  token: string;
+}
+
+export interface RegisterResponse {
+  user: User;
+  token: string;
 }
 
 export interface Costume {
-  id: string;
+  id: number;
   name: string;
-  description: string;
-  price: number;
-  category: string;
-  size: string[];
-  images: string[];
-  available: boolean;
-  rating?: number;
-  reviews?: Review[];
+  price: string;
+  image: string;
+  description?: string;
+  category?: string;
+  images?: string[];
+  available?: boolean;
+  colors?: string[];
+  size?: string[];
+  // varsa diğer opsiyonel alanlar
 }
 
 export interface Review {

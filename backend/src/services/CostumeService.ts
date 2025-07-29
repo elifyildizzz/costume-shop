@@ -1,5 +1,4 @@
-import { Costume } from '../models/Costume';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Costume } from '@prisma/client';
 
 export class CostumeService {
   private prisma: PrismaClient;
@@ -9,44 +8,33 @@ export class CostumeService {
   }
 
   public async getCostumes(filters: {
-    category?: string;
-    size?: string;
+    name?: string;
     color?: string;
-    type?: 'sale' | 'rent';
+    size?: string;
   }): Promise<Costume[]> {
     const where: any = {};
 
-    if (filters.category) {
-      where.category = filters.category;
+    if (filters.name) {
+      where.name = { contains: filters.name, mode: 'insensitive' };
     }
 
     if (filters.color) {
-      where.color = filters.color;
-    }
-
-    if (filters.type === 'sale') {
-      where.isForSale = true;
-    } else if (filters.type === 'rent') {
-      where.isForRent = true;
+      // colors alanı virgül ile ayrılmış string, filtreleme için LIKE kullanılır
+      where.colors = { contains: filters.color };
     }
 
     if (filters.size) {
-      where.size = {
-        has: filters.size
-      };
+      where.size = { contains: filters.size };
     }
 
     const costumes = await this.prisma.costume.findMany({
-      where,
-      orderBy: {
-        createdAt: 'desc'
-      }
+      where
     });
 
     return costumes;
   }
 
-  public async getCostumeById(id: string): Promise<Costume> {
+  public async getCostumeById(id: number): Promise<Costume> {
     const costume = await this.prisma.costume.findUnique({
       where: { id }
     });
@@ -58,7 +46,7 @@ export class CostumeService {
     return costume;
   }
 
-  public async createCostume(costumeData: Partial<Costume>): Promise<Costume> {
+  public async createCostume(costumeData: Omit<Costume, 'id'>): Promise<Costume> {
     const costume = await this.prisma.costume.create({
       data: costumeData
     });

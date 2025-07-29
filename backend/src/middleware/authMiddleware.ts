@@ -1,21 +1,23 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
+
 const JWT_SECRET = process.env.JWT_SECRET || 'gizliAnahtar';
 
-// Express Request tipini genişlet
-interface AuthenticatedRequest extends Request {
-  userId?: string;
-}
-
-export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
+export function authenticateToken(req: Request, res: Response, next: NextFunction): void {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
-  if (!token) return res.status(401).json({ message: 'Token bulunamadı.' });
+  if (!token) {
+    res.status(401).json({ message: 'Token bulunamadı.' });
+    return;
+  }
 
   jwt.verify(token, JWT_SECRET, (err, decoded: any) => {
-    if (err) return res.status(403).json({ message: 'Token geçersiz.' });
+    if (err) {
+      res.status(403).json({ message: 'Token geçersiz.' });
+      return;
+    }
     req.userId = decoded.userId;
     next();
   });
-}; 
+} 

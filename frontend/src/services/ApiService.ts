@@ -1,12 +1,13 @@
 import axios, { AxiosInstance } from 'axios';
-import { User, Costume, Order, ApiResponse, PaginatedResponse } from '../types';
+import { User, Costume, Order, ApiResponse, PaginatedResponse, RegisterData, LoginResponse, RegisterResponse } from '../types';
 
 class ApiService {
   private api: AxiosInstance;
   private baseURL: string;
 
   constructor() {
-    this.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+    const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+    this.baseURL = `${API_BASE}/api`;
     this.api = axios.create({
       baseURL: this.baseURL,
       timeout: 10000,
@@ -44,14 +45,38 @@ class ApiService {
   }
 
   // Auth metodları
-  async login(email: string, password: string): Promise<ApiResponse<{ user: User; token: string }>> {
-    const response = await this.api.post('/auth/login', { email, password });
-    return response.data;
+  async login(email: string, password: string): Promise<ApiResponse<LoginResponse>> {
+    try {
+      const response = await this.api.post('/auth/login', { email, password });
+      console.log('Login API response:', response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error('Login API error:', error);
+      if (error.response) {
+        throw new Error(error.response.data.message || 'Giriş yapılırken bir hata oluştu');
+      } else if (error.request) {
+        throw new Error('Sunucuya bağlanılamıyor. Backend çalışıyor mu?');
+      } else {
+        throw new Error('Beklenmeyen bir hata oluştu');
+      }
+    }
   }
 
-  async register(userData: Omit<User, 'id'>): Promise<ApiResponse<{ user: User; token: string }>> {
-    const response = await this.api.post('/auth/register', userData);
-    return response.data;
+  async register(userData: RegisterData): Promise<ApiResponse<RegisterResponse>> {
+    try {
+      const response = await this.api.post('/auth/register', userData);
+      console.log('Register API response:', response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error('Register API error:', error);
+      if (error.response) {
+        throw new Error(error.response.data.message || 'Kayıt olurken bir hata oluştu');
+      } else if (error.request) {
+        throw new Error('Sunucuya bağlanılamıyor. Backend çalışıyor mu?');
+      } else {
+        throw new Error('Beklenmeyen bir hata oluştu');
+      }
+    }
   }
 
   async logout(): Promise<void> {

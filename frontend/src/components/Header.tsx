@@ -39,12 +39,9 @@ const Header: React.FC = () => {
 
       {/* Ana Header */}
       <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '1.5rem 1rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', minHeight: '80px' }}>
-          {/* Sol taraf - Boş alan (Desktop) */}
-          <div style={{ flex: '1' }} className="hidden md:block"></div>
-          
-          {/* Orta - Logo */}
-          <div className="logo-container" style={{ flex: '1', display: 'flex', justifyContent: 'center' }}>
+        {/* Logo Satırı */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '80px' }}>
+          <div className="logo-container" style={{ display: 'flex', justifyContent: 'center' }}>
             <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
               <img 
                 src="/logo.png" 
@@ -65,243 +62,274 @@ const Header: React.FC = () => {
               />
             </Link>
           </div>
+        </div>
 
-          {/* Sağ taraf - Arama + Kullanıcı menüsü */}
+        {/* Arama + Kullanıcı Kontrolleri Satırı */}
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between',
+          marginTop: '1rem',
+          minHeight: '40px'
+        }}>
+          {/* Sol - Arama */}
+          <form className="search-container" style={{ position: 'relative' }} onSubmit={handleSearch}>
+            <input
+              type="text"
+              placeholder="Arama..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              style={{ 
+                border: '1px solid #d1d5db',
+                borderRadius: '9999px',
+                background: '#f9fafb',
+                fontSize: '14px',
+                padding: '0.5rem 2.5rem 0.5rem 1rem',
+                width: '200px',
+                outline: 'none',
+                transition: 'all 0.2s ease'
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = '#ea580c';
+                e.target.style.boxShadow = '0 0 0 2px rgba(234, 88, 12, 0.2)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = '#d1d5db';
+                e.target.style.boxShadow = 'none';
+              }}
+            />
+            <button 
+              type="submit"
+              style={{
+                position: 'absolute',
+                right: '12px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: '#6b7280',
+                transition: 'color 0.2s ease'
+              }}
+              onMouseOver={(e) => {
+                (e.target as HTMLButtonElement).style.color = '#ea580c';
+              }}
+              onMouseOut={(e) => {
+                (e.target as HTMLButtonElement).style.color = '#6b7280';
+              }}
+            >
+              🔍
+            </button>
+          </form>
+
+          {/* Sağ - Kullanıcı Kontrolleri */}
           <div
             className="user-menu"
             style={{
-              flex: '1',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              gap: '0.8rem',
-              minHeight: '40px'
-            }}
-          >
-            {/* Arama Alanı */}
-            <form className="search-container" style={{ position: 'relative' }} onSubmit={handleSearch}>
-              <input
-                type="text"
-                placeholder="Arama..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                style={{ 
-                  border: '1px solid #d1d5db',
-                  borderRadius: '9999px',
-                  background: '#f9fafb',
-                  fontSize: '14px',
-                  padding: '0.5rem 2.5rem 0.5rem 1rem',
-                  width: '160px',
-                  outline: 'none',
-                  transition: 'all 0.2s ease'
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#ea580c';
-                  e.target.style.boxShadow = '0 0 0 2px rgba(234, 88, 12, 0.2)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#d1d5db';
-                  e.target.style.boxShadow = 'none';
-                }}
-              />
-              <button 
-                type="submit"
-                style={{
-                  position: 'absolute',
-                  right: '12px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: '#6b7280',
-                  transition: 'color 0.2s ease'
-                }}
-                onMouseOver={(e) => {
-                  (e.target as HTMLButtonElement).style.color = '#ea580c';
-                }}
-                onMouseOut={(e) => {
-                  (e.target as HTMLButtonElement).style.color = '#6b7280';
-                }}
-              >
-                🔍
-              </button>
-            </form>
-
-            {/* Kullanıcı Menüsü */}
-            <div style={{
               display: 'flex',
               alignItems: 'center',
               gap: '0.8rem'
-            }}>
-              {user ? (
-                <>
-                  <span className="hidden lg:inline" style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                    Merhaba, <span style={{ fontWeight: '500', color: '#1f2937' }}>{user.firstName} {user.lastName}</span>
-                  </span>
-                  <button
-                    onClick={handleLogout}
-                    style={{ 
-                      fontSize: '0.875rem', 
-                      color: '#6b7280', 
-                      background: 'none', 
-                      border: 'none', 
-                      cursor: 'pointer',
-                      fontWeight: '500',
-                      transition: 'color 0.2s ease'
-                    }}
-                    onMouseOver={(e) => {
-                      (e.target as HTMLButtonElement).style.color = '#ea580c';
-                    }}
-                    onMouseOut={(e) => {
-                      (e.target as HTMLButtonElement).style.color = '#6b7280';
-                    }}
-                  >
-                    Çıkış
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link 
-                    to="/login" 
-                    style={{ 
-                      fontSize: '0.875rem', 
-                      color: '#6b7280', 
-                      textDecoration: 'none',
-                      fontWeight: '500',
-                      transition: 'color 0.2s ease'
-                    }}
-                    onMouseOver={(e) => {
-                      (e.target as HTMLAnchorElement).style.color = '#ea580c';
-                    }}
-                    onMouseOut={(e) => {
-                      (e.target as HTMLAnchorElement).style.color = '#6b7280';
-                    }}
-                  >
-                    Üye Girişi
-                  </Link>
-                  <span style={{ color: '#d1d5db', margin: '0 0.3rem', fontSize: '1.1rem' }}>|</span>
-                  <Link 
-                    to="/register" 
-                    style={{ 
-                      fontSize: '0.875rem', 
-                      color: '#6b7280', 
-                      textDecoration: 'none',
-                      fontWeight: '500',
-                      transition: 'color 0.2s ease',
-                      marginRight: '16px'
-                    }}
-                    onMouseOver={(e) => {
-                      (e.target as HTMLAnchorElement).style.color = '#ea580c';
-                    }}
-                    onMouseOut={(e) => {
-                      (e.target as HTMLAnchorElement).style.color = '#6b7280';
-                    }}
-                  >
-                    Üye Ol
-                  </Link>
-                  {/* Daha kısa ve ince dikey çizgi */}
-                  <span style={{
-                    display: 'inline-block',
-                    width: '1px',
-                    height: '16px',
-                    background: '#e5e7eb',
-                    margin: '0 0.3rem',
-                    verticalAlign: 'middle'
-                  }} />
-                  {/* Favoriler */}
-                  <button
-                    type="button"
-                    style={{
-                      fontSize: '1.15rem',
-                      color: '#6b7280',
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      transition: 'color 0.2s ease',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      verticalAlign: 'middle',
-                      padding: 0,
-                      lineHeight: 1,
-                      height: '20px',
-                      position: 'relative',
-                      top: '2px'
-                    }}
-                    title="Favorilerim"
-                    onClick={() => {
-                      if (user) {
-                        navigate('/wishlist');
-                      } else {
-                        navigate('/login');
-                      }
-                    }}
-                    aria-label="Favorilerim"
-                    onMouseOver={e => (e.currentTarget.style.color = '#ef4444')}
-                    onMouseOut={e => (e.currentTarget.style.color = '#6b7280')}
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-                      strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }}>
-                      <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                  </button>
-                </>
-              )}
-            </div>
+            }}
+          >
+            {user ? (
+              <>
+                {/* Kullanıcı Selamlaması */}
+                <span style={{ 
+                  fontSize: '0.95rem', 
+                  color: '#1f2937',
+                  fontFamily: 'Inter, sans-serif',
+                  fontWeight: 600,
+                  letterSpacing: '0.01em'
+                }}>
+                  Merhaba, <span style={{ fontWeight: 700 }}>{user.firstName} {user.lastName?.split(' ')[0]}</span>
+                </span>
+
+                {/* Favoriler Butonu */}
+                <button
+                  onClick={() => navigate('/wishlist')}
+                  title="Favorilerim"
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    fontSize: '1.3rem',
+                    color: '#000',
+                    transition: 'color 0.2s'
+                  }}
+                  onMouseOver={e => (e.currentTarget.style.color = '#ef4444')}
+                  onMouseOut={e => (e.currentTarget.style.color = '#000')}
+                >
+                  <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                </button>
+
+                {/* Çıkış Butonu */}
+                <button
+                  onClick={handleLogout}
+                  style={{ 
+                    fontSize: '0.95rem', 
+                    color: '#6b7280', 
+                    background: 'none', 
+                    border: 'none', 
+                    cursor: 'pointer',
+                    fontWeight: 600,
+                    transition: 'color 0.2s',
+                    padding: '0.4rem 1.1rem',
+                    borderRadius: '6px'
+                  }}
+                  onMouseOver={(e) => {
+                    (e.target as HTMLButtonElement).style.color = '#ea580c';
+                  }}
+                  onMouseOut={(e) => {
+                    (e.target as HTMLButtonElement).style.color = '#6b7280';
+                  }}
+                >
+                  Çıkış
+                </button>
+              </>
+            ) : (
+              <>
+                <Link 
+                  to="/login" 
+                  style={{ 
+                    fontSize: '0.875rem', 
+                    color: '#6b7280', 
+                    textDecoration: 'none',
+                    fontWeight: '500',
+                    transition: 'color 0.2s ease'
+                  }}
+                  onMouseOver={(e) => {
+                    (e.target as HTMLAnchorElement).style.color = '#ea580c';
+                  }}
+                  onMouseOut={(e) => {
+                    (e.target as HTMLAnchorElement).style.color = '#6b7280';
+                  }}
+                >
+                  Üye Girişi
+                </Link>
+                <span style={{ color: '#d1d5db', margin: '0 0.3rem', fontSize: '1.1rem' }}>|</span>
+                <Link 
+                  to="/register" 
+                  style={{ 
+                    fontSize: '0.875rem', 
+                    color: '#6b7280', 
+                    textDecoration: 'none',
+                    fontWeight: '500',
+                    transition: 'color 0.2s ease',
+                    marginRight: '16px'
+                  }}
+                  onMouseOver={(e) => {
+                    (e.target as HTMLAnchorElement).style.color = '#ea580c';
+                  }}
+                  onMouseOut={(e) => {
+                    (e.target as HTMLAnchorElement).style.color = '#6b7280';
+                  }}
+                >
+                  Üye Ol
+                </Link>
+                {/* Dikey çizgi */}
+                <span style={{
+                  display: 'inline-block',
+                  width: '1px',
+                  height: '16px',
+                  background: '#e5e7eb',
+                  margin: '0 0.3rem',
+                  verticalAlign: 'middle'
+                }} />
+                {/* Favoriler */}
+                <button
+                  type="button"
+                  style={{ 
+                    fontSize: '1.15rem',
+                    color: '#6b7280', 
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'color 0.2s ease',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    verticalAlign: 'middle',
+                    padding: 0,
+                    lineHeight: 1,
+                    height: '20px',
+                    position: 'relative',
+                    top: '2px'
+                  }}
+                  title="Favorilerim"
+                  onClick={() => {
+                    if (user) {
+                      navigate('/wishlist');
+                    } else {
+                      navigate('/login');
+                    }
+                  }}
+                  aria-label="Favorilerim"
+                  onMouseOver={e => (e.currentTarget.style.color = '#ef4444')}
+                  onMouseOut={e => (e.currentTarget.style.color = '#6b7280')}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                    strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }}>
+                    <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
 
-
-{/* Navigasyon Menüsü */}
-<div className="border-t border-gray-200 bg-white">
-  <div className="container mx-auto max-w-7xl px-4 sm:px-6 py-3">
-    <nav className="flex flex-wrap justify-center items-center gap-4 md:gap-8">
-      <Link 
-        to="/new-costumes"  // Düzeltildi: /en-yeniler yerine /new-costumes
-        className="text-sm font-medium text-gray-700 hover:text-orange-600 transition-colors duration-200 tracking-wide whitespace-nowrap py-2 px-1 border-b-2 border-transparent hover:border-orange-600"
-      >
-        EN YENİLER
-      </Link>
-      <Link 
-        to="/costumes"  // Düzeltildi: /kostumler yerine /costumes
-        className="text-sm font-medium text-gray-700 hover:text-orange-600 transition-colors duration-200 tracking-wide whitespace-nowrap py-2 px-1 border-b-2 border-transparent hover:border-orange-600"
-      >
-        KOSTÜMLER
-      </Link>
-      <Link 
-        to="/aksesuarlar" 
-        className="text-sm font-medium text-gray-700 hover:text-orange-600 transition-colors duration-200 tracking-wide whitespace-nowrap py-2 px-1 border-b-2 border-transparent hover:border-orange-600"
-      >
-        AKSESUARLAR
-      </Link>
-      <Link 
-        to="/blog" 
-        className="text-sm font-medium text-gray-700 hover:text-orange-600 transition-colors duration-200 tracking-wide whitespace-nowrap py-2 px-1 border-b-2 border-transparent hover:border-orange-600"
-      >
-        BLOG
-      </Link>
-      <Link 
-        to="/galeri" 
-        className="text-sm font-medium text-gray-700 hover:text-orange-600 transition-colors duration-200 tracking-wide whitespace-nowrap py-2 px-1 border-b-2 border-transparent hover:border-orange-600"
-      >
-        GALERİ
-      </Link>
-      <Link 
-        to="/indirim" 
-        className="text-sm font-medium text-gray-700 hover:text-orange-600 transition-colors duration-200 tracking-wide whitespace-nowrap py-2 px-1 border-b-2 border-transparent hover:border-orange-600"
-      >
-        İNDİRİM
-      </Link>
-      <Link 
-        to="/contact" 
-        className="text-sm font-medium text-gray-700 hover:text-orange-600 transition-colors duration-200 tracking-wide whitespace-nowrap py-2 px-1 border-b-2 border-transparent hover:border-orange-600"
-      >
-        İLETİŞİM
-      </Link>
-    </nav>
-  </div>
-</div>
+      {/* Navigasyon Menüsü */}
+      <div className="border-t border-gray-200 bg-white">
+        <div className="container mx-auto max-w-7xl px-4 sm:px-6 py-3">
+          <nav className="flex flex-wrap justify-center items-center gap-4 md:gap-8">
+            <Link 
+              to="/new-costumes"
+              className="text-sm font-medium text-gray-700 hover:text-orange-600 transition-colors duration-200 tracking-wide whitespace-nowrap py-2 px-1 border-b-2 border-transparent hover:border-orange-600"
+            >
+              EN YENİLER
+            </Link>
+            <Link 
+              to="/costumes"
+              className="text-sm font-medium text-gray-700 hover:text-orange-600 transition-colors duration-200 tracking-wide whitespace-nowrap py-2 px-1 border-b-2 border-transparent hover:border-orange-600"
+            >
+              KOSTÜMLER
+            </Link>
+            <Link 
+              to="/aksesuarlar" 
+              className="text-sm font-medium text-gray-700 hover:text-orange-600 transition-colors duration-200 tracking-wide whitespace-nowrap py-2 px-1 border-b-2 border-transparent hover:border-orange-600"
+            >
+              AKSESUARLAR
+            </Link>
+            <Link 
+              to="/blog" 
+              className="text-sm font-medium text-gray-700 hover:text-orange-600 transition-colors duration-200 tracking-wide whitespace-nowrap py-2 px-1 border-b-2 border-transparent hover:border-orange-600"
+            >
+              BLOG
+            </Link>
+            <Link 
+              to="/galeri" 
+              className="text-sm font-medium text-gray-700 hover:text-orange-600 transition-colors duration-200 tracking-wide whitespace-nowrap py-2 px-1 border-b-2 border-transparent hover:border-orange-600"
+            >
+              GALERİ
+            </Link>
+            <Link 
+              to="/indirim" 
+              className="text-sm font-medium text-gray-700 hover:text-orange-600 transition-colors duration-200 tracking-wide whitespace-nowrap py-2 px-1 border-b-2 border-transparent hover:border-orange-600"
+            >
+              İNDİRİM
+            </Link>
+            <Link 
+              to="/contact" 
+              className="text-sm font-medium text-gray-700 hover:text-orange-600 transition-colors duration-200 tracking-wide whitespace-nowrap py-2 px-1 border-b-2 border-transparent hover:border-orange-600"
+            >
+              İLETİŞİM
+            </Link>
+          </nav>
+        </div>
+      </div>
     </header>
   );
 };

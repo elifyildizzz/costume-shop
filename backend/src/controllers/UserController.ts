@@ -1,6 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { UserService } from '../services/UserService';
 
+// Request tipini genişletmek için interface
+interface AuthenticatedRequest extends Request {
+  userId?: string;
+}
+
 export class UserController {
   private userService: UserService;
 
@@ -8,7 +13,7 @@ export class UserController {
     this.userService = new UserService();
   }
 
-  public register = async (req: Request, res: Response) => {
+  public register = async (req: Request, res: Response): Promise<void> => {
     try {
       const userData = req.body;
       const user = await this.userService.createUser(userData);
@@ -19,39 +24,59 @@ export class UserController {
     }
   };
 
-  public login = async (req: Request, res: Response) => {
+  public login = async (req: Request, res: Response): Promise<void> => {
     try {
       const { email, password } = req.body;
       const result = await this.userService.loginUser(email, password);
-      res.json({ success: true, ...result });
+      
+      // data wrapper ekleyin
+      res.json({ 
+        success: true, 
+        data: {
+          user: result.user,
+          token: result.token
+        }
+      });
     } catch (error) {
       const errMsg = error instanceof Error ? error.message : String(error);
       res.status(401).json({ success: false, message: errMsg });
     }
   };
-
-  public getProfile = async (req: Request, res: Response) => {
+  public getProfile = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
       // userId JWT middleware tarafından ekleniyor
-      // @ts-ignore
       const userId = req.userId;
+      
       if (!userId) {
-        return res.status(401).json({ success: false, message: 'Kullanıcı kimliği bulunamadı.' });
+        res.status(401).json({ 
+          success: false, 
+          message: 'Kullanıcı kimliği bulunamadı.' 
+        });
+        return;
       }
-      const user = await this.userService.getUserById(userId);
+
+      const user = await this.userService.getUserById(parseInt(userId));
+      
+      if (!user) {
+        res.status(404).json({ 
+          success: false, 
+          message: 'Kullanıcı bulunamadı.' 
+        });
+        return;
+      }
+
       res.json({ success: true, user });
     } catch (error) {
       const errMsg = error instanceof Error ? error.message : String(error);
-      res.status(404).json({ success: false, message: errMsg });
+      res.status(500).json({ success: false, message: errMsg });
     }
   };
 }
 
-export function errorHandler(err: any, req: Request, res: Response, next: NextFunction) {
+export function errorHandler(err: any, req: Request, res: Response, next: NextFunction): void {
   console.error(err.stack || err);
   res.status(err.status || 500).json({
     success: false,
     message: err.message || 'Sunucu hatası oluştu.'
   });
 }
-

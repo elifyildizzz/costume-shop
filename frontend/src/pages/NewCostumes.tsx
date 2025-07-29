@@ -1,4 +1,5 @@
-import costumeData from '../data/NewCostumes.json';
+import costumesData from '../data/Costumes.json';
+import newCostumeData from '../data/NewCostumes.json';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
@@ -11,8 +12,8 @@ const sortOptions = [
   { value: 'price-high', label: 'En Yüksek Fiyat' },
 ];
 
-const allColors = Array.from(new Set(costumeData.newCostumes.flatMap(c => c.colors)));
-const allSizes = Array.from(new Set(costumeData.newCostumes.flatMap(c => c.size || [])));
+const allColors = Array.from(new Set(costumesData.costumes.flatMap(c => c.colors)));
+const allSizes = Array.from(new Set(costumesData.costumes.flatMap(c => c.size || [])));
 
 function parsePrice(priceStr: string) {
   return parseFloat(priceStr.replace(' TL', '').replace('.', '').replace(',', '.'));
@@ -54,8 +55,10 @@ export default function NewCostumes() {
     fetchFavorites();
   }, [user]);
 
+  const newCostumes = costumesData.costumes.filter(c => newCostumeData.newCostumeIds.includes(c.id));
+
   // Sıralama
-  let sortedCostumes = [...costumeData.newCostumes];
+  let sortedCostumes = [...newCostumes];
   if (selectedSort === 'price-low') {
     sortedCostumes.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
   } else if (selectedSort === 'price-high') {

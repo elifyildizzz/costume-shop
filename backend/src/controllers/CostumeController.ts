@@ -10,13 +10,12 @@ export class CostumeController {
 
   public getAllCostumes = async (req: Request, res: Response) => {
     try {
-      const { category, size, color, type } = req.query;
-      const costumes = await this.costumeService.getCostumes({
-        category: category as string,
-        size: size as string,
-        color: color as string,
-        type: type as 'sale' | 'rent'
-      });
+      const { name, color, size } = req.query;
+      const filters: any = {};
+      if (name) filters.name = name;
+      if (color) filters.color = color;
+      if (size) filters.size = size;
+      const costumes = await this.costumeService.getCostumes(filters);
       res.json({ success: true, costumes });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
@@ -27,7 +26,7 @@ export class CostumeController {
   public getCostumeById = async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      const costume = await this.costumeService.getCostumeById(id);
+      const costume = await this.costumeService.getCostumeById(Number(id));
       res.json({ success: true, costume });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Costume not found';

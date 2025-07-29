@@ -1,0 +1,44 @@
+{
+  "aksesuarlar": [
+    {
+      "id": 1,
+      "name": "PRENSES TAÇ VE ASASI",
+      "price": "199,00 TL",
+      "image": "/images/aksesuar1.jpg",
+      "colors": ["gold", "pink"],
+      "size": []
+    },
+    {
+      "id": 2,
+      "name": "SÜSLÜ TAÇ",
+      "price": "149,00 TL",
+      "image": "/images/aksesuar2.jpg",
+      "colors": ["black", "red"],
+      "size": []
+    },
+    {
+      "id": 3,
+      "name": "YILDIZLI DEĞNEK",
+      "price": "99,00 TL",
+      "image": "/images/aksesuar3.jpg",
+      "colors": ["silver"],
+      "size": []
+    },
+    {
+      "id": 4,
+      "name": "ASLAN KULAKLI TAÇ",
+      "price": "89,00 TL",
+      "image": "/images/aksesuar4.jpg",
+      "colors": ["black", "white"],
+      "size": []
+    },
+    {
+      "id": 5,
+      "name": "AYI KULAKLI TAÇ",
+      "price": "89,00 TL",
+      "image": "/images/aksesuar5.jpg",
+      "colors": ["black", "white"],
+      "size": []
+    }
+  ]
+} 

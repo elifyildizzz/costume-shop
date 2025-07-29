@@ -86,7 +86,8 @@ class CartService {
   getCartTotal(): number {
     const cart = this.getCart();
     return cart.reduce((total, item) => {
-      return total + (item.costume.price * item.quantity * item.rentalDays);
+      const price = parseFloat(item.costume.price.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+      return total + (price * item.quantity * item.rentalDays);
     }, 0);
   }
 
@@ -100,10 +101,14 @@ class CartService {
   isInCart(costumeId: string, size: string, startDate: string): boolean {
     const cart = this.getCart();
     return cart.some(item => 
-      item.costume.id === costumeId && 
+      String(item.costume.id) === String(costumeId) && 
       item.size === size && 
       item.startDate === startDate
     );
+  }
+
+  private parsePrice(price: string): number {
+    return parseFloat(price.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
   }
 }
 
