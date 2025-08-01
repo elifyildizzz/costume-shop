@@ -15,6 +15,10 @@ import Accessories from './pages/Accessories';
 import Contact from './pages/Contact';
 import Wishlist from './pages/Wishlist';
 import Welcome from './pages/Welcome';
+import About from './pages/About';
+import BankAccounts from './pages/BankAccounts';
+import Terms from './pages/Terms';
+import FAQ from './pages/FAQ';
 
 // Geçici placeholder componentler
 const Checkout = () => <div>Checkout sayfası - yakında gelecek</div>;
@@ -46,6 +50,10 @@ function App() {
                 <Route path="/new-costumes" element={<NewCostumes />} /> {/* Yeni eklenen route */}
                 <Route path="/aksesuarlar" element={<Accessories />} />
                 <Route path="/contact" element={<Contact />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/bank" element={<BankAccounts />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/faq" element={<FAQ />} />
                 <Route path="/costumes/:id" element={<CostumeDetail />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/checkout" element={<Checkout />} />

@@ -69,20 +69,34 @@ const Footer: React.FC = () => {
 
         {/* Sosyal Medya İkonları */}
         <div className="flex justify-center space-x-6">
-          {[
-            { Icon: FaFacebook, href: "#" },
-            { Icon: FaInstagram, href: "#" },
-            { Icon: FaTwitter, href: "#" },
-            { Icon: FaYoutube, href: "#" }
-          ].map(({ Icon, href }, idx) => (
-            <a
-              key={idx}
-              href={href}
-              className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-orange-500 hover:text-white transition-all duration-300 shadow-sm hover:shadow-md"
-            >
-              {Icon({ size: 22 })}
-            </a>
-          ))}
+          <a
+            href="#"
+            className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 transition-all duration-300"
+            title="Facebook"
+          >
+            {FaFacebook({ size: 22 })}
+          </a>
+          <a
+            href="#"
+            className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 transition-all duration-300"
+            title="Instagram"
+          >
+            {FaInstagram({ size: 22 })}
+          </a>
+          <a
+            href="#"
+            className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 transition-all duration-300"
+            title="Twitter"
+          >
+            {FaTwitter({ size: 22 })}
+          </a>
+          <a
+            href="#"
+            className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 transition-all duration-300"
+            title="YouTube"
+          >
+            {FaYoutube({ size: 22 })}
+          </a>
         </div>
 
         {/* Copyright */}
