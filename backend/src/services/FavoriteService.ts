@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export class FavoriteService {
-  // Favori ekle (kostüm veya aksesuar)
+  // Favori ekle (kostüm veya aksesuar) - Toggle mantığı
   async addFavorite(userId: number, costumeId?: number, accessoryId?: number) {
     if (!costumeId && !accessoryId) {
       throw new Error('Kostüm veya aksesuar ID gerekli.');
@@ -17,8 +17,12 @@ export class FavoriteService {
       },
     });
     if (existing) {
-      throw new Error('Bu ürün zaten favorilerde.');
+      // Eğer favori zaten varsa, onu sil (toggle)
+      return prisma.favorite.delete({
+        where: { id: existing.id },
+      });
     }
+    // Favori yoksa, ekle
     return prisma.favorite.create({
       data: {
         userId,

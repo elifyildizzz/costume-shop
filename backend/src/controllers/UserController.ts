@@ -1,10 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { UserService } from '../services/UserService';
-
-// Request tipini genişletmek için interface
-interface AuthenticatedRequest extends Request {
-  userId?: string;
-}
+import { AuthenticatedRequest } from '../middleware/authMiddleware';
 
 export class UserController {
   private userService: UserService;
@@ -65,6 +61,28 @@ export class UserController {
         return;
       }
 
+      res.json({ success: true, data: user });
+    } catch (error) {
+      const errMsg = error instanceof Error ? error.message : String(error);
+      res.status(500).json({ success: false, message: errMsg });
+    }
+  };
+
+  public updateProfile = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    try {
+      const userId = req.userId;
+      
+      if (!userId) {
+        res.status(401).json({ 
+          success: false, 
+          message: 'Kullanıcı kimliği bulunamadı.' 
+        });
+        return;
+      }
+
+      const updateData = req.body;
+      const user = await this.userService.updateUser(parseInt(userId), updateData);
+      
       res.json({ success: true, user });
     } catch (error) {
       const errMsg = error instanceof Error ? error.message : String(error);

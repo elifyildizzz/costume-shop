@@ -1,7 +1,7 @@
 import costumesData from '../data/Costumes.json';
 import newCostumeData from '../data/NewCostumes.json';
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
 import FavoriteService from '../services/FavoriteService';
 
@@ -222,23 +222,25 @@ export default function NewCostumes() {
       <div className="newcostumes-grid">
         {filteredCostumes.map((costume: any, idx: number) => (
           <div key={costume.id} className="newcostumes-card" style={{position: 'relative'}}>
-            <div className="newcostumes-image-container">
-              <img src={costume.image} alt={costume.name} />
-            </div>
-            <div className="newcostumes-info">
-              <div className="text-black text-base font-normal leading-tight">{costume.name}</div>
-              <div className="text-black text-lg font-bold">{costume.price}</div>
-              {/* Bedenler */}
-              <div className="beden-row">
-                <span className="text-xs text-gray-400 mr-2 cursor-pointer" onClick={() => setOpenSizeIndex(openSizeIndex === idx ? null : idx)}>Beden seç</span>
-                {openSizeIndex === idx && costume.size && costume.size.length > 0 && (
-                  costume.size.map((size: string, sidx: number) => (
-                    <span key={sidx} className="size-box">{size}</span>
-                  ))
-                )}
+            <Link to={`/costume/${costume.id}`} style={{textDecoration: 'none', color: 'inherit'}}>
+              <div className="newcostumes-image-container">
+                <img src={costume.image} alt={costume.name} />
               </div>
-            </div>
-            <span style={{position: 'absolute', right: 12, bottom: 12}} onClick={() => handleFavoriteToggle(costume)}>
+              <div className="newcostumes-info">
+                <div className="text-black text-base font-normal leading-tight">{costume.name}</div>
+                <div className="text-black text-lg font-bold">{costume.price}</div>
+                {/* Bedenler */}
+                <div className="beden-row">
+                  <span className="text-xs text-gray-400 mr-2 cursor-pointer" onClick={(e) => { e.preventDefault(); setOpenSizeIndex(openSizeIndex === idx ? null : idx); }}>Beden seç</span>
+                  {openSizeIndex === idx && costume.size && costume.size.length > 0 && (
+                    costume.size.map((size: string, sidx: number) => (
+                      <span key={sidx} className="size-box">{size}</span>
+                    ))
+                  )}
+                </div>
+              </div>
+            </Link>
+            <span style={{position: 'absolute', right: 12, bottom: 12, zIndex: 10}} onClick={(e) => { e.stopPropagation(); handleFavoriteToggle(costume); }}>
               <svg width="20" height="20" fill={isItemFavorite(costume) ? '#ef4444' : 'none'} stroke={isItemFavorite(costume) ? '#ef4444' : 'currentColor'} viewBox="0 0 24 24" strokeWidth={2} className="hover:text-red-500 cursor-pointer">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>

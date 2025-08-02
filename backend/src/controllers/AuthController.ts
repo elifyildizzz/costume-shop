@@ -2,9 +2,11 @@ import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { EmailService } from '../services/EmailService';
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'gizliAnahtar';
+const emailService = new EmailService();
 
 const AuthController = {
   register: async (req: Request, res: Response) => {
@@ -19,11 +21,20 @@ const AuthController = {
         });
       }
 
+      // Email formatını kontrol et
+      if (!EmailService.isValidEmail(email)) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Lütfen geçerli bir email adresi girin.' 
+        });
+      }
+
+      // Email zaten var mı kontrol et
       const existingUser = await prisma.user.findUnique({ where: { email } });
       if (existingUser) {
         return res.status(400).json({ 
           success: false, 
-          message: 'Bu email ile zaten bir kullanıcı var.' 
+          message: 'Bu email adresi zaten mevcut. Lütfen farklı bir email adresi kullanın.' 
         });
       }
 
@@ -31,6 +42,14 @@ const AuthController = {
       const user = await prisma.user.create({
         data: { firstName, lastName, email, password: hashedPassword },
       });
+
+      // Hoş geldin emaili gönder (async olarak, hata olursa kullanıcı kaydını engellemez)
+      try {
+        await emailService.sendWelcomeEmail(email, firstName);
+      } catch (emailError) {
+        console.error('Hoş geldin emaili gönderilemedi:', emailError);
+        // Email gönderilemese bile kullanıcı kaydı tamamlanır
+      }
 
       const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
 

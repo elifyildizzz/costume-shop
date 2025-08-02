@@ -1,9 +1,9 @@
-import costumesData from '../data/Costumes.json';
-import accessoriesData from '../data/Accessories.json';
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
 import FavoriteService from '../services/FavoriteService';
+import costumesData from '../data/Costumes.json';
+import accessoriesData from '../data/Accessories.json';
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -229,39 +229,41 @@ export default function Costumes() {
         ) : (
           allResults.map((item: any, idx: number) => (
             <div key={item.id} className="newcostumes-card" style={{position: 'relative'}}>
-            <div className="newcostumes-image-container">
-                <img src={item.image} alt={item.name} />
-            </div>
-            <div className="newcostumes-info">
-                <div className="text-black text-base font-normal leading-tight">{item.name}</div>
-                <div className="text-black text-lg font-bold">{item.price}</div>
-              {/* Bedenler */}
-              <div className="beden-row">
-                <span className="text-xs text-gray-400 mr-2 cursor-pointer" onClick={() => setOpenSizeIndex(openSizeIndex === idx ? null : idx)}>Beden seç</span>
-                  {openSizeIndex === idx && item.size && item.size.length > 0 && (
-                    item.size.map((size: string, sidx: number) => (
-                    <span key={sidx} className="text-xs text-gray-700 border border-gray-300 rounded px-1 mr-1">{size}</span>
-                  ))
-                )}
-              </div>
-            </div>
-              <span
-                style={{position: 'absolute', right: 12, bottom: 12, zIndex: 10}}
-                onClick={e => { e.stopPropagation(); handleFavoriteToggle(item); }}
-              >
-                <svg
-                  width="20"
-                  height="20"
-                  fill={isItemFavorite(item) ? '#ef4444' : 'none'}
-                  stroke={isItemFavorite(item) ? '#ef4444' : 'currentColor'}
-                  viewBox="0 0 24 24"
-                  strokeWidth={2}
-                  className="hover:text-red-500 cursor-pointer"
+              <Link to={`/costume/${item.id}`} style={{textDecoration: 'none', color: 'inherit'}}>
+                <div className="newcostumes-image-container">
+                    <img src={item.image} alt={item.name} />
+                </div>
+                <div className="newcostumes-info">
+                    <div className="text-black text-base font-normal leading-tight">{item.name}</div>
+                    <div className="text-black text-lg font-bold">{item.price}</div>
+                  {/* Bedenler */}
+                  <div className="beden-row">
+                    <span className="text-xs text-gray-400 mr-2 cursor-pointer" onClick={(e) => { e.preventDefault(); setOpenSizeIndex(openSizeIndex === idx ? null : idx); }}>Beden seç</span>
+                    {openSizeIndex === idx && item.size && item.size.length > 0 && (
+                      item.size.map((size: string, sidx: number) => (
+                        <span key={sidx} className="size-box">{size}</span>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </Link>
+                <span
+                  style={{position: 'absolute', right: 12, bottom: 12, zIndex: 10}}
+                  onClick={e => { e.stopPropagation(); handleFavoriteToggle(item); }}
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-              </span>
-          </div>
+                  <svg
+                    width="20"
+                    height="20"
+                    fill={isItemFavorite(item) ? '#ef4444' : 'none'}
+                    stroke={isItemFavorite(item) ? '#ef4444' : 'currentColor'}
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                    className="hover:text-red-500 cursor-pointer"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                </span>
+            </div>
           ))
         )}
       </div>

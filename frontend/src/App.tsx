@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import Costumes from './pages/Costumes';
 import NewCostumes from './pages/NewCostumes'; 
 import { CostumeDetail } from './pages/CostumeDetail';
+import AccessoryDetail from './pages/AccessoryDetail';
 import { Cart } from './pages/Cart';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
@@ -19,6 +20,7 @@ import About from './pages/About';
 import BankAccounts from './pages/BankAccounts';
 import Terms from './pages/Terms';
 import FAQ from './pages/FAQ';
+import Gallery from './pages/Gallery';
 
 // Geçici placeholder componentler
 const Checkout = () => <div>Checkout sayfası - yakında gelecek</div>;
@@ -54,7 +56,9 @@ function App() {
                 <Route path="/bank" element={<BankAccounts />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/faq" element={<FAQ />} />
-                <Route path="/costumes/:id" element={<CostumeDetail />} />
+                <Route path="/galeri" element={<Gallery />} />
+                <Route path="/costume/:id" element={<CostumeDetail />} />
+                <Route path="/accessories/:id" element={<AccessoryDetail />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/checkout" element={<Checkout />} />
                 <Route path="/login" element={<Login />} />

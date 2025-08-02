@@ -16,6 +16,7 @@ model User {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @default(now()) @updatedAt
   favorites Favorite[]
+  orders    Order[]
 }
 
 model Costume {
@@ -26,6 +27,8 @@ model Costume {
   colors    String
   size      String
   favorites Favorite[]
+  stocks    CostumeStock[]
+  orderItems OrderItem[]
 }
 
 model Accessory {
@@ -35,6 +38,31 @@ model Accessory {
   image     String
   colors    String
   favorites Favorite[]
+  stocks    AccessoryStock[]
+}
+
+model CostumeStock {
+  id        Int      @id @default(autoincrement())
+  costumeId Int
+  size      String
+  quantity  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  costume   Costume  @relation(fields: [costumeId], references: [id])
+
+  @@unique([costumeId, size])
+}
+
+model AccessoryStock {
+  id          Int      @id @default(autoincrement())
+  accessoryId Int
+  size        String?
+  quantity    Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+  accessory   Accessory @relation(fields: [accessoryId], references: [id])
+
+  @@unique([accessoryId, size])
 }
 
 model Favorite {
@@ -50,4 +78,29 @@ model Favorite {
   @@unique([userId, costumeId, accessoryId])
   @@index([accessoryId], map: "Favorite_accessoryId_fkey")
   @@index([costumeId], map: "Favorite_costumeId_fkey")
+}
+
+model Order {
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  type            String   // RENTAL veya PURCHASE
+  status          String   @default("PENDING") // PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED
+  totalAmount     Float
+  shippingAddress String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now()) @updatedAt
+  user            User     @relation(fields: [userId], references: [id])
+  items           OrderItem[]
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  costumeId Int
+  quantity  Int
+  size      String
+  price     Float
+  type      String   // RENTAL veya PURCHASE
+  order     Order    @relation(fields: [orderId], references: [id])
+  costume   Costume  @relation(fields: [costumeId], references: [id])
 }

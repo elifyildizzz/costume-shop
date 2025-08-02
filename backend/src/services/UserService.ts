@@ -71,4 +71,16 @@ export class UserService {
     });
     return !!user;
   }
+
+  public async updateUser(id: number, updateData: Partial<User>): Promise<User> {
+    // Password varsa hash'le
+    if (updateData.password) {
+      updateData.password = await bcrypt.hash(updateData.password, 10);
+    }
+
+    return await this.prisma.user.update({
+      where: { id },
+      data: updateData
+    });
+  }
 }

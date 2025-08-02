@@ -1,10 +1,6 @@
 import { Request, Response } from 'express';
 import { FavoriteService } from '../services/FavoriteService';
-
-// Request tipini genişletmek için interface
-interface AuthenticatedRequest extends Request {
-  userId?: string;
-}
+import { AuthenticatedRequest } from '../middleware/authMiddleware';
 
 const favoriteService = new FavoriteService();
 
@@ -16,25 +12,39 @@ export class FavoriteController {
       const userId = req.userId;
       const { costumeId, accessoryId } = req.body;
       
+      console.log('=== FAVORI EKLEME DEBUG ===');
+      console.log('userId:', userId);
+      console.log('costumeId:', costumeId);
+      console.log('accessoryId:', accessoryId);
+      console.log('req.body:', req.body);
+      console.log('req.headers:', req.headers);
+      
       if (!userId) {
+        console.log('userId bulunamadı');
         res.status(401).json({ success: false, message: 'Kullanıcı kimliği bulunamadı.' });
         return;
       }
       
       if (!costumeId && !accessoryId) {
+        console.log('costumeId ve accessoryId yok');
         res.status(400).json({ success: false, message: 'Kostüm veya aksesuar ID gerekli.' });
         return;
       }
 
       // String'i number'a çevir
+      const parsedUserId = parseInt(userId);
+      console.log('parsedUserId:', parsedUserId);
+      
       const favorite = await favoriteService.addFavorite(
-        parseInt(userId), 
+        parsedUserId, 
         costumeId, 
         accessoryId
       );
       
+      console.log('Favori başarıyla eklendi:', favorite);
       res.status(201).json({ success: true, favorite });
     } catch (error) {
+      console.error('Favori ekleme hatası:', error);
       res.status(400).json({ 
         success: false, 
         message: error instanceof Error ? error.message : String(error) 

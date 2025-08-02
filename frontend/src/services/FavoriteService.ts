@@ -1,7 +1,6 @@
 import axios from 'axios';
-import { API_URL } from '../config'; // config.ts'ten al
 
-const API_BASE = `${API_URL}/api`;
+const API_BASE = 'http://localhost:3001/api';
 
 export interface Favorite {
   id: number;
@@ -22,17 +21,27 @@ export class FavoriteService {
   }
 
   static async addFavorite({ token, costumeId, accessoryId }: { token: string; costumeId?: number; accessoryId?: number; }) {
-    const res = await axios.post(`${API_BASE}/favorites/add`, { costumeId, accessoryId }, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    return res.data.favorite;
+    try {
+      const res = await axios.post(`${API_BASE}/favorites/add`, { costumeId, accessoryId }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      return res.data.favorite;
+    } catch (error) {
+      console.error('Favori ekleme hatası:', error);
+      throw error;
+    }
   }
 
   static async removeFavorite({ token, costumeId, accessoryId }: { token: string; costumeId?: number; accessoryId?: number; }) {
-    const res = await axios.post(`${API_BASE}/favorites/remove`, { costumeId, accessoryId }, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    return res.data;
+    try {
+      const res = await axios.post(`${API_BASE}/favorites/remove`, { costumeId, accessoryId }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      return res.data;
+    } catch (error) {
+      console.error('Favori silme hatası:', error);
+      throw error;
+    }
   }
 }
 

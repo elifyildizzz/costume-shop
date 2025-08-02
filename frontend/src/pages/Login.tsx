@@ -28,7 +28,20 @@ export function Login() {
       navigate('/');
       }, 1500);
     } catch (err: any) {
-      setError(err.message || 'Giriş başarısız');
+      // Daha detaylı hata mesajları
+      if (err.message) {
+        if (err.message.includes('Kullanıcı bulunamadı')) {
+          setError('Bu email adresi ile kayıtlı kullanıcı bulunamadı. Lütfen kayıt olun.');
+        } else if (err.message.includes('Şifre yanlış')) {
+          setError('Şifre yanlış. Lütfen tekrar deneyin.');
+        } else if (err.message.includes('Email ve şifre zorunludur')) {
+          setError('Email ve şifre alanları zorunludur.');
+        } else {
+          setError(err.message);
+        }
+      } else {
+        setError('Giriş yapılırken bir hata oluştu. Lütfen tekrar deneyin.');
+      }
     } finally {
       setLoading(false);
     }

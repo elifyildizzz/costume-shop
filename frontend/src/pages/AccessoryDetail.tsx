@@ -3,22 +3,22 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
 import FavoriteService from '../services/FavoriteService';
 import StockService, { AvailabilityItem } from '../services/StockService';
-import costumesData from '../data/Costumes.json';
+import accessoriesData from '../data/Accessories.json';
 
-interface Costume {
+interface Accessory {
   id: number;
   name: string;
   price: string;
   image: string;
   colors: string[];
-  size: string[];
+  size?: string[];
 }
 
-const CostumeDetail: React.FC = () => {
+const AccessoryDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [costume, setCostume] = useState<Costume | null>(null);
+  const [accessory, setAccessory] = useState<Accessory | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -26,23 +26,23 @@ const CostumeDetail: React.FC = () => {
 
   useEffect(() => {
     if (id) {
-      const foundCostume = costumesData.costumes.find(c => c.id === parseInt(id));
-      if (foundCostume) {
-        setCostume(foundCostume);
-        checkFavoriteStatus(foundCostume.id);
-        checkStockAvailability(foundCostume.id);
+      const foundAccessory = accessoriesData.aksesuarlar.find(a => a.id === parseInt(id));
+      if (foundAccessory) {
+        setAccessory(foundAccessory);
+        checkFavoriteStatus(foundAccessory.id);
+        checkStockAvailability(foundAccessory.id);
       }
       setLoading(false);
     }
   }, [id]);
 
-  const checkFavoriteStatus = async (costumeId: number) => {
+  const checkFavoriteStatus = async (accessoryId: number) => {
     if (!user) return;
     try {
       const token = localStorage.getItem('authToken');
       if (token) {
         const favorites = await FavoriteService.getFavorites(token);
-        const isFav = favorites.some(fav => fav.costumeId === costumeId);
+        const isFav = favorites.some(fav => fav.accessoryId === accessoryId);
         setIsFavorite(isFav);
       }
     } catch (e) {
@@ -50,65 +50,55 @@ const CostumeDetail: React.FC = () => {
     }
   };
 
-  const checkStockAvailability = async (costumeId: number) => {
+  const checkStockAvailability = async (accessoryId: number) => {
     try {
-      const availability = await StockService.checkCostumeAvailability(costumeId);
+      const availability = await StockService.checkAccessoryAvailability(accessoryId);
       setStockAvailability(availability);
     } catch (e) {
       console.error('Stok durumu alınamadı:', e);
-      if (costume) {
-        const fallbackAvailability = costume.size.map(size => ({
+      if (accessory && accessory.size) {
+        const fallbackAvailability = accessory.size.map(size => ({
           size,
           available: true,
           quantity: 1
         }));
         setStockAvailability(fallbackAvailability);
+      } else {
+        setStockAvailability([{
+          size: 'standart',
+          available: true,
+          quantity: 1
+        }]);
       }
     }
   };
 
   const handleFavoriteToggle = async () => {
-    console.log('=== FAVORI TOGGLE DEBUG ===');
-    console.log('User:', user);
-    console.log('Costume:', costume);
-    console.log('IsFavorite:', isFavorite);
-    
     if (!user) {
-      console.log('User yok, login sayfasına yönlendiriliyor');
       navigate('/login');
       return;
     }
-    if (!costume) {
-      console.log('Costume yok');
-      return;
-    }
+    if (!accessory) return;
 
     const token = localStorage.getItem('authToken');
-    console.log('Token:', token);
-    
     if (!token) {
-      console.log('Token yok, login sayfasına yönlendiriliyor');
       navigate('/login');
       return;
     }
 
     try {
       console.log('Favori toggle işlemi...');
-      console.log('Gönderilen data:', { token, costumeId: costume.id });
-      await FavoriteService.addFavorite({ token, costumeId: costume.id });
+      console.log('Gönderilen data:', { token, accessoryId: accessory.id });
+      await FavoriteService.addFavorite({ token, accessoryId: accessory.id });
       
       // Toggle işlemi başarılı, state'i tersine çevir
       setIsFavorite(!isFavorite);
       console.log('Favori toggle başarılı, yeni durum:', !isFavorite);
     } catch (e: any) {
       console.error('Favori işlemi başarısız:', e);
-      console.error('Error response:', e.response);
-      console.error('Error status:', e.response?.status);
-      console.error('Error data:', e.response?.data);
       
       // Token geçersizse kullanıcıyı logout yap
       if (e.response?.status === 401) {
-        console.log('401 hatası, token siliniyor ve login sayfasına yönlendiriliyor');
         localStorage.removeItem('authToken');
         navigate('/login');
       }
@@ -136,7 +126,7 @@ const CostumeDetail: React.FC = () => {
     );
   }
 
-  if (!costume) {
+  if (!accessory) {
     return (
       <div style={{
         minHeight: '100vh',
@@ -151,11 +141,14 @@ const CostumeDetail: React.FC = () => {
           color: '#6b7280',
           fontSize: '1.1rem'
         }}>
-          Kostüm bulunamadı
+          Aksesuar bulunamadı
         </div>
       </div>
     );
   }
+
+  // Stok durumunu kontrol et
+  const isInStock = stockAvailability.length > 0 && stockAvailability.some(item => item.available);
 
   return (
     <div style={{
@@ -163,54 +156,68 @@ const CostumeDetail: React.FC = () => {
       backgroundColor: '#ffffff',
       fontFamily: '"Inter", "Segoe UI", -apple-system, sans-serif'
     }}>
-      {/* Geri Butonu - Üstte Minimal */}
+      {/* Header */}
       <div style={{
-        padding: '1rem 0 0 2rem'
+        backgroundColor: '#ffffff',
+        padding: '1rem 0',
+        position: 'sticky',
+        top: 0,
+        zIndex: 10
       }}>
-        <button
-          onClick={() => navigate(-1)}
-          style={{
-            background: 'none',
-            border: 'none',
-            fontSize: '1rem',
-            color: '#6b7280',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}
-        >
-          ← Geri
-        </button>
+        <div style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+          padding: '0 2rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-start'
+        }}>
+          <button
+            onClick={() => navigate(-1)}
+            style={{
+              background: 'none',
+              border: 'none',
+              fontSize: '1rem',
+              color: '#6b7280',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}
+          >
+            ← Geri
+          </button>
+        </div>
       </div>
 
       {/* Main Content */}
       <div style={{
-        padding: '2rem 0',
-        width: '100%'
+        maxWidth: '1400px',
+        margin: '0 auto',
+        padding: '3rem 0'
       }}>
         <div style={{
-          display: 'flex',
-          gap: '5rem',
-          alignItems: 'flex-start',
-          paddingLeft: '2rem',
-          paddingRight: '2rem'
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '4rem',
+          alignItems: 'start'
         }}>
           {/* Left Side - Image */}
           <div style={{
-            flexShrink: 0,
-            width: '600px'
+            position: 'sticky',
+            top: '100px'
           }}>
             <div style={{
               aspectRatio: '3/4',
               backgroundColor: '#f3f4f6',
               overflow: 'hidden',
               boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-              width: '100%'
+              width: '100%',
+              maxWidth: '600px'
             }}>
               <img 
-                src={costume.image} 
-                alt={costume.name}
+                src={accessory.image} 
+                alt={accessory.name}
                 style={{
                   width: '100%',
                   height: '100%',
@@ -222,11 +229,10 @@ const CostumeDetail: React.FC = () => {
 
           {/* Right Side - Product Info */}
           <div style={{
-            flex: 1,
             display: 'flex',
             flexDirection: 'column',
             gap: '2rem',
-            paddingLeft: '5rem'
+            paddingLeft: '2rem'
           }}>
             {/* Title and Favorite */}
             <div style={{
@@ -243,7 +249,7 @@ const CostumeDetail: React.FC = () => {
                 margin: 0,
                 fontFamily: '"Inter", "Segoe UI", -apple-system, sans-serif'
               }}>
-                {costume.name}
+                {accessory.name}
               </h1>
               <button
                 onClick={handleFavoriteToggle}
@@ -288,7 +294,7 @@ const CostumeDetail: React.FC = () => {
               color: '#111827',
               marginBottom: '1rem'
             }}>
-              {costume.price}
+              {accessory.price}
             </div>
 
             {/* Colors */}
@@ -307,7 +313,7 @@ const CostumeDetail: React.FC = () => {
                 gap: '0.75rem',
                 flexWrap: 'wrap'
               }}>
-                {costume.colors.map((color, index) => (
+                {accessory.colors.map((color, index) => (
                   <span 
                     key={index}
                     style={{
@@ -327,80 +333,138 @@ const CostumeDetail: React.FC = () => {
               </div>
             </div>
 
-            {/* Size Selection */}
-            <div>
-              <h3 style={{
-                fontSize: '0.9rem',
-                fontWeight: '600',
-                color: '#374151',
-                marginBottom: '1.5rem',
-                fontFamily: '"Inter", "Segoe UI", -apple-system, sans-serif'
-              }}>
-                BEDEN SEÇENEKLERİ
-              </h3>
-              <div style={{
-                display: 'flex',
-                gap: '0.5rem',
-                flexWrap: 'wrap'
-              }}>
-                {costume.size.map((size) => {
-                  const stockItem = stockAvailability.find(item => item.size === size);
-                  const isAvailable = stockItem ? stockItem.available : true;
-                  
-                  return (
-                    <button
-                      key={size}
-                      onClick={() => isAvailable && setSelectedSize(selectedSize === size ? null : size)}
-                      disabled={!isAvailable}
-                      style={{
-                        padding: '0.5rem 1rem',
-                        border: selectedSize === size ? '2px solid #111827' : '2px solid #e5e7eb',
-                        borderRadius: '6px',
-                        backgroundColor: selectedSize === size ? '#111827' : '#ffffff',
-                        color: selectedSize === size ? '#ffffff' : isAvailable ? '#111827' : '#9ca3af',
-                        cursor: isAvailable ? 'pointer' : 'not-allowed',
-                        transition: 'all 0.2s ease',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: '0.2rem',
-                        fontWeight: '600',
-                        fontSize: '0.8rem',
-                        fontFamily: '"Inter", "Segoe UI", -apple-system, sans-serif',
-                        minWidth: '60px'
-                      }}
-                      onMouseOver={(e) => {
-                        if (isAvailable && selectedSize !== size) {
-                          e.currentTarget.style.borderColor = '#d1d5db';
-                          e.currentTarget.style.backgroundColor = '#f9fafb';
-                        }
-                      }}
-                      onMouseOut={(e) => {
-                        if (selectedSize !== size) {
-                          e.currentTarget.style.borderColor = '#e5e7eb';
-                          e.currentTarget.style.backgroundColor = '#ffffff';
-                        }
-                      }}
-                    >
-                      <div style={{
-                        fontSize: '0.9rem',
-                        fontWeight: '700',
-                        fontFamily: '"Inter", "Segoe UI", -apple-system, sans-serif'
-                      }}>
-                        {size}
-                      </div>
-                      <div style={{
-                        fontSize: '0.6rem',
-                        opacity: 0.8,
-                        fontFamily: '"Inter", "Segoe UI", -apple-system, sans-serif'
-                      }}>
-                        {isAvailable ? 'Stokta' : 'Stokta Yok'}
-                      </div>
-                    </button>
-                  );
-                })}
+            {/* Stock Status - Beden yoksa sadece stok durumu göster */}
+            {!accessory.size || accessory.size.length === 0 ? (
+              <div>
+                <h3 style={{
+                  fontSize: '0.9rem',
+                  fontWeight: '600',
+                  color: '#374151',
+                  marginBottom: '1rem',
+                  fontFamily: '"Inter", "Segoe UI", -apple-system, sans-serif'
+                }}>
+                  STOK DURUMU
+                </h3>
+                <div style={{
+                  padding: '1rem',
+                  border: '2px solid #e5e7eb',
+                  borderRadius: '8px',
+                  backgroundColor: '#ffffff',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem',
+                  width: 'fit-content'
+                }}>
+                  <div style={{
+                    width: '12px',
+                    height: '12px',
+                    borderRadius: '50%',
+                    backgroundColor: isInStock ? '#10b981' : '#ef4444'
+                  }}></div>
+                  <span style={{
+                    fontSize: '1rem',
+                    fontWeight: '600',
+                    color: '#111827',
+                    fontFamily: '"Inter", "Segoe UI", -apple-system, sans-serif'
+                  }}>
+                    {isInStock ? 'Stokta' : 'Stokta Yok'}
+                  </span>
+                </div>
               </div>
-            </div>
+            ) : (
+              /* Beden Seçimi - Beden varsa göster */
+              <div>
+                <h3 style={{
+                  fontSize: '0.9rem',
+                  fontWeight: '600',
+                  color: '#374151',
+                  marginBottom: '1.5rem',
+                  fontFamily: '"Inter", "Segoe UI", -apple-system, sans-serif'
+                }}>
+                  BEDEN SEÇENEKLERİ
+                </h3>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))',
+                  gap: '0.75rem'
+                }}>
+                  {accessory.size.map((size) => {
+                    const stockItem = stockAvailability.find(item => item.size === size);
+                    const isAvailable = stockItem ? stockItem.available : true;
+                    
+                    return (
+                      <button
+                        key={size}
+                        onClick={() => isAvailable && setSelectedSize(selectedSize === size ? null : size)}
+                        disabled={!isAvailable}
+                        style={{
+                          padding: '1rem 0.5rem',
+                          border: selectedSize === size ? '2px solid #111827' : '2px solid #e5e7eb',
+                          borderRadius: '8px',
+                          backgroundColor: selectedSize === size ? '#111827' : '#ffffff',
+                          color: selectedSize === size ? '#ffffff' : isAvailable ? '#111827' : '#9ca3af',
+                          cursor: isAvailable ? 'pointer' : 'not-allowed',
+                          transition: 'all 0.2s ease',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          gap: '0.3rem',
+                          fontWeight: '600',
+                          fontSize: '0.9rem',
+                          fontFamily: '"Inter", "Segoe UI", -apple-system, sans-serif'
+                        }}
+                        onMouseOver={(e) => {
+                          if (isAvailable && selectedSize !== size) {
+                            e.currentTarget.style.borderColor = '#d1d5db';
+                            e.currentTarget.style.backgroundColor = '#f9fafb';
+                          }
+                        }}
+                        onMouseOut={(e) => {
+                          if (selectedSize !== size) {
+                            e.currentTarget.style.borderColor = '#e5e7eb';
+                            e.currentTarget.style.backgroundColor = '#ffffff';
+                          }
+                        }}
+                      >
+                        <div style={{
+                          fontSize: '1rem',
+                          fontWeight: '700',
+                          fontFamily: '"Inter", "Segoe UI", -apple-system, sans-serif'
+                        }}>
+                          {size}
+                        </div>
+                        <div style={{
+                          fontSize: '0.7rem',
+                          opacity: 0.8,
+                          fontFamily: '"Inter", "Segoe UI", -apple-system, sans-serif'
+                        }}>
+                          {isAvailable ? 'Stokta' : 'Stokta Yok'}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Size Guide - Sadece beden varsa göster */}
+            {accessory.size && accessory.size.length > 0 && (
+              <div>
+                <button style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#6b7280',
+                  textDecoration: 'underline',
+                  fontSize: '0.8rem',
+                  cursor: 'pointer',
+                  padding: 0,
+                  fontFamily: '"Inter", "Segoe UI", -apple-system, sans-serif'
+                }}>
+                  BEDEN REHBERİ
+                </button>
+              </div>
+            )}
 
             {/* Contact Information */}
             <div style={{
@@ -417,7 +481,7 @@ const CostumeDetail: React.FC = () => {
                 marginBottom: '1rem',
                 fontFamily: '"Inter", "Segoe UI", -apple-system, sans-serif'
               }}>
-                Bu kostümü kiralamak için bizimle iletişime geçin:
+                Bu aksesuarı kiralamak için bizimle iletişime geçin:
               </h3>
               <div style={{
                 display: 'flex',
@@ -460,4 +524,4 @@ const CostumeDetail: React.FC = () => {
   );
 };
 
-export { CostumeDetail };
+export default AccessoryDetail; 

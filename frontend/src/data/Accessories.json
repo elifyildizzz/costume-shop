@@ -6,7 +6,7 @@
       "price": "199,00 TL",
       "image": "/images/aksesuar1.jpg",
       "colors": ["gold", "pink"],
-      "size": []
+      "size": ["standart"]
     },
     {
       "id": 2,

@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
-import { useNavigate } from 'react-router-dom';
 import FavoriteService, { Favorite } from '../services/FavoriteService';
 
 const Wishlist: React.FC = () => {
+  const [favorites, setFavorites] = useState<Favorite[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [openSizeIndex, setOpenSizeIndex] = useState<number | null>(null);
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [favorites, setFavorites] = useState<Favorite[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user) {
@@ -37,10 +38,16 @@ const Wishlist: React.FC = () => {
     const token = localStorage.getItem('authToken');
     if (!token) return;
     try {
-      await FavoriteService.removeFavorite({ token, costumeId: fav.costumeId });
+      // Hem kostüm hem de aksesuar için çalışacak şekilde güncellendi
+      await FavoriteService.removeFavorite({ 
+        token, 
+        costumeId: fav.costumeId, 
+        accessoryId: fav.accessoryId 
+      });
       setFavorites(favorites.filter(f => f.id !== fav.id));
     } catch (e) {
       // Hata yönetimi
+      console.error('Favori silme hatası:', e);
     }
   };
 
@@ -62,34 +69,61 @@ const Wishlist: React.FC = () => {
           <div className="text-gray-500">Henüz favori ürününüz yok.</div>
         ) : (
           <div className="newcostumes-grid">
-            {favorites.map((fav) => (
+            {favorites.map((fav, idx) => (
               <div key={fav.id} className="newcostumes-card" style={{ position: 'relative' }}>
-                <div className="newcostumes-image-container">
-                  <img
-                    src={fav.costume?.image || fav.accessory?.image}
-                    alt={fav.costume?.name || fav.accessory?.name}
-                  />
-                </div>
-                <div className="newcostumes-info">
-                  <div className="text-black text-base font-normal leading-tight">
-                    {fav.costume?.name || fav.accessory?.name}
+                <Link 
+                  to={fav.costume ? `/costume/${fav.costume.id}` : `/accessories/${fav.accessory?.id}`}
+                  style={{ textDecoration: 'none', color: 'inherit' }}
+                >
+                  <div className="newcostumes-image-container">
+                    <img
+                      src={fav.costume?.image || fav.accessory?.image}
+                      alt={fav.costume?.name || fav.accessory?.name}
+                    />
                   </div>
-                  <div className="text-black text-lg font-bold">
-                    {fav.costume?.price || fav.accessory?.price}
-                  </div>
-                  {/* Beden seç + beden kutucukları */}
-                  {fav.costume?.size && (
-                    <div className="beden-row">
-                      <span className="text-xs text-gray-400 mr-2">Beden seç</span>
-                      {fav.costume.size.split(',').map((size: string, idx: number) => (
-                        <span key={idx} className="text-xs text-gray-700 border border-gray-300 rounded px-1 mr-1">{size}</span>
-                      ))}
+                  <div className="newcostumes-info">
+                    <div className="text-black text-base font-normal leading-tight">
+                      {fav.costume?.name || fav.accessory?.name}
                     </div>
-                  )}
-                </div>
+                    <div className="text-black text-lg font-bold">
+                      {fav.costume?.price || fav.accessory?.price}
+                    </div>
+                    {/* Kostüm bedenleri */}
+                    {fav.costume?.size && (
+                      <div className="beden-row">
+                        <span className="text-xs text-gray-400 mr-2 cursor-pointer" onClick={(e) => {
+                          e.preventDefault();
+                          setOpenSizeIndex(openSizeIndex === idx ? null : idx);
+                        }}>Beden seç</span>
+                        {openSizeIndex === idx && fav.costume.size && fav.costume.size.length > 0 && (
+                          fav.costume.size.split(',').map((size: string, sidx: number) => (
+                            <span key={sidx} className="size-box">{size}</span>
+                          ))
+                        )}
+                      </div>
+                    )}
+                    {/* Aksesuar bedenleri */}
+                    {fav.accessory?.size && (
+                      <div className="beden-row">
+                        <span className="text-xs text-gray-400 mr-2 cursor-pointer" onClick={(e) => {
+                          e.preventDefault();
+                          setOpenSizeIndex(openSizeIndex === idx ? null : idx);
+                        }}>Beden seç</span>
+                        {openSizeIndex === idx && fav.accessory.size && fav.accessory.size.length > 0 && (
+                          fav.accessory.size.map((size: string, sidx: number) => (
+                            <span key={sidx} className="size-box">{size}</span>
+                          ))
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </Link>
                 <span
                   style={{ position: 'absolute', right: 12, bottom: 12, zIndex: 10 }}
-                  onClick={() => handleRemoveFavorite(fav)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRemoveFavorite(fav);
+                  }}
                 >
                   <svg
                     width="20"

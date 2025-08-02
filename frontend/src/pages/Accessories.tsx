@@ -1,6 +1,6 @@
 import aksesuarData from '../data/Accessories.json';
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
 import FavoriteService from '../services/FavoriteService';
 
@@ -210,24 +210,16 @@ export default function Aksesuarlar() {
       <div className="newcostumes-grid">
         {filteredAksesuarlar.map((aksesuar: any) => (
           <div key={aksesuar.id} className="newcostumes-card" style={{position: 'relative'}}>
-            <div className="newcostumes-image-container">
-              <img src={aksesuar.image} alt={aksesuar.name} />
-            </div>
-            <div className="newcostumes-info">
-              <div className="text-black text-base font-normal leading-tight">{aksesuar.name}</div>
-              <div className="text-black text-lg font-bold">{aksesuar.price}</div>
-              {/* Bedenler */}
-              <div className="beden-row">
-                {aksesuar.size && aksesuar.size.length > 0 ? (
-                  (aksesuar.size as string[]).map((size: string, idx: number) => (
-                    <span key={idx} className="text-xs text-gray-700 border border-gray-300 rounded px-1 mr-1">{size}</span>
-                  ))
-                ) : (
-                  <span className="text-xs text-gray-400 ml-1">Beden seç</span>
-                )}
+            <Link to={`/accessories/${aksesuar.id}`} style={{textDecoration: 'none', color: 'inherit'}}>
+              <div className="newcostumes-image-container">
+                <img src={aksesuar.image} alt={aksesuar.name} />
               </div>
-            </div>
-            <span style={{position: 'absolute', right: 12, bottom: 12}} onClick={() => handleFavoriteToggle(aksesuar)}>
+              <div className="newcostumes-info">
+                <div className="text-black text-base font-normal leading-tight">{aksesuar.name}</div>
+                <div className="text-black text-lg font-bold">{aksesuar.price}</div>
+              </div>
+            </Link>
+            <span style={{position: 'absolute', right: 12, bottom: 12, zIndex: 10}} onClick={(e) => { e.stopPropagation(); handleFavoriteToggle(aksesuar); }}>
               <svg width="20" height="20" fill={isItemFavorite(aksesuar) ? '#ef4444' : 'none'} stroke={isItemFavorite(aksesuar) ? '#ef4444' : 'currentColor'} viewBox="0 0 24 24" strokeWidth={2} className="hover:text-red-500 cursor-pointer">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>

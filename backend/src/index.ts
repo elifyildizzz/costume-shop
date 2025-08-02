@@ -8,12 +8,14 @@ import authRoutes from './routes/auth';
 import costumeRoutes from './routes/costumes';
 import orderRoutes from './routes/orders';
 import favoriteRoutes from './routes/favorites';
+import stockRoutes from './routes/stock';
+import userRoutes from './routes/users';
 
 dotenv.config();
 
 const app = express();
 const prisma = new PrismaClient();
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(express.json());
@@ -27,6 +29,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/costumes', costumeRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/favorites', favoriteRoutes); // DÜZELTME 2: /favorites -> /api/favorites
+app.use('/api/stock', stockRoutes);
+app.use('/api/users', userRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
@@ -39,8 +43,8 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
   res.status(500).json({ success: false, message: 'Something went wrong!' });
 });
 
-app.listen(3001, () => {
-  console.log('Server is running on port 3001');
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
 
 // Graceful shutdown

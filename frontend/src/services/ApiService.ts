@@ -34,11 +34,7 @@ class ApiService {
     this.api.interceptors.response.use(
       (response) => response,
       (error) => {
-        if (error.response?.status === 401) {
-          // Token geçersizse kullanıcıyı çıkış yap
-          localStorage.removeItem('authToken');
-          window.location.href = '/login';
-        }
+        // 401 hatası için otomatik yönlendirme kaldırıldı
         return Promise.reject(error);
       }
     );

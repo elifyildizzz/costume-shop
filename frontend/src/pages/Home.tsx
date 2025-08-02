@@ -14,25 +14,25 @@ const Home: React.FC = () => {
   // Önerilen kostümler için örnek veri
   const featuredCostumes = [
     {
-      id: 1,
+      id: 6,
       name: ' Salyangoz Kostümü',
       price: '₺249',
       image: '../images/kostüm1.jpg'
     },
     {
-      id: 2,
+      id: 5,
       name: 'Peri Kostümü',
       price: '₺199',
-      image: '../images/kostüm2.jpg'
+      image: '../images/kostüm2.jpg',
     },
     {
-      id: 3,
+      id: 4,
       name: 'Uğur Böceği Kostümü',
       price: '₺349',
       image: '../images/kostüm3.jpg',
     },
     {
-      id: 4,
+      id: 3,
       name: 'Cadı Kostümü',
       price: '₺299',
       image: '../images/kostüm4.jpg',
@@ -440,32 +440,36 @@ const Home: React.FC = () => {
                       {costume.price}
                     </div>
                     
-                    <button style={{
-                      backgroundColor: 'rgba(255,255,255,0.9)',
-                      color: '#333',
-                      border: 'none',
-                      padding: '0.6rem 1.5rem',
-                      borderRadius: '25px',
-                      fontSize: '0.9rem',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      transition: 'all 0.3s ease',
-                      backdropFilter: 'blur(10px)',
-                      boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
-                    }}
-                    onMouseOver={(e) => {
-                      (e.target as HTMLButtonElement).style.backgroundColor = '#668A69';
-                      (e.target as HTMLButtonElement).style.color = 'white';
-                      (e.target as HTMLButtonElement).style.transform = 'translateY(-2px)';
-                    }}
-                    onMouseOut={(e) => {
-                      (e.target as HTMLButtonElement).style.backgroundColor = 'rgba(255,255,255,0.9)';
-                      (e.target as HTMLButtonElement).style.color = '#333';
-                      (e.target as HTMLButtonElement).style.transform = 'translateY(0)';
-                    }}
+                    <Link
+                      to={`/costume/${costume.id}`}
+                      style={{
+                        backgroundColor: 'rgba(255,255,255,0.9)',
+                        color: '#333',
+                        border: 'none',
+                        padding: '0.6rem 1.5rem',
+                        borderRadius: '25px',
+                        fontSize: '0.9rem',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        backdropFilter: 'blur(10px)',
+                        boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+                        textDecoration: 'none',
+                        display: 'inline-block'
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = '#668A69';
+                        e.currentTarget.style.color = 'white';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.9)';
+                        e.currentTarget.style.color = '#333';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }}
                     >
                       İncele
-                    </button>
+                    </Link>
                   </div>
                 </div>
               ))}

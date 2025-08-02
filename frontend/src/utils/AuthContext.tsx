@@ -51,11 +51,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setUser(response.data);
           } else {
             localStorage.removeItem('authToken');
+            setUser(null);
           }
         } catch (error) {
           console.error('Error initializing auth:', error);
           localStorage.removeItem('authToken');
+          setUser(null);
         }
+      } else {
+        setUser(null);
       }
       setLoading(false);
     };
